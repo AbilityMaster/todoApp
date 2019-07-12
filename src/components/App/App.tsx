@@ -26,8 +26,16 @@ import "./app.scss";
 import "react-day-picker/lib/style.css";
 import {IProps} from "../../interfaces/interfaces";
 
+interface AppState {
+    forScroll: number;
+}
+
 class App extends React.Component<IProps> {
     $taskContainer = React.createRef<HTMLDivElement>();
+
+    state: AppState = {
+        forScroll: 0
+    };
 
     openModal = () => {
        const { currentId, openModalForAdd } = this.props;
@@ -89,15 +97,16 @@ class App extends React.Component<IProps> {
           listSelectedDays.push(transformId(currentId));
       }
 
+      this.setState({ forScroll: tasks.length });
       addTask({config, isShowModal: false, listSelectedDays});
-
     };
 
     componentDidUpdate(prevProps: Readonly<IProps>, prevState: Readonly<{}>, snapshot?: any): void {
-        if (!prevProps.config[2] || !this.props.config[2]) {
-            return;
+        const prevForScroll = deepclone(prevState);
+
+        if (this.state.forScroll !== prevForScroll) {
+            this.scrollToBottom()
         }
-        console.log(prevProps.config[2].tasks, this.props.config[2].tasks);
     }
 
     onBlur = (data: boolean): void => {
