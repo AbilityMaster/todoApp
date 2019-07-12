@@ -1,0 +1,102 @@
+.task {
+  padding: 15px 10px;
+  display: flex;
+  position: relative;
+  justify-content: space-between;
+  background-color: #f1f1f1;
+  transition: all linear 0.1s;
+  cursor: pointer;
+  &:before {
+    content: 'Завершено';
+    position: absolute;
+    left: -103px;
+    text-transform: uppercase;
+    font-weight: 600;
+    color: #2b772b;
+  }
+
+  &_active {
+    &:hover {
+      background: linear-gradient(to top left, powderblue, pink);
+      transition: all linear 0.1s;
+    }
+
+    &:hover .task__position {
+      background: none;
+      color: #000;
+      transition: all linear .1s;
+    }
+  }
+
+  &__delete {
+    cursor: pointer;
+    font-size: 22px;
+    color: #d03030;
+
+    &:before {
+      display: inline-block;
+      height: 100%;
+      vertical-align: middle;
+      content: "";
+    }
+
+    &:hover {
+      color: rgb(119, 13, 13);
+    }
+  }
+
+  &_grey-theme {
+    background: #e0e1e2;
+
+    &:hover {
+      background-color: #cecece;
+      transition: all linear 0.1s;
+    }
+  }
+
+  &__position {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 50px;
+    background: #4a90e2;
+    color: #fff;
+    font-weight: 600;
+    font-size: 22px;
+    text-align: center;
+    font-family: arial;
+
+    &_done {
+      background: #2d9c4b;
+    }
+
+    &:before {
+      display: inline-block;
+      height: 100%;
+      vertical-align: middle;
+      content: "";
+    }
+  }
+
+  &__description {
+    margin-left: 50px;
+    margin-right: 30px;
+
+    &_done {
+      text-decoration: line-through;
+    }
+  }
+}
+
+input[name="done"] {
+  position: absolute;
+  height: 19px;
+  width: 19px;
+  top: 0;
+  z-index: 100;
+  bottom: 0;
+  right: 40px;
+  margin: auto;
+  cursor: pointer;
+}

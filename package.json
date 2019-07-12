@@ -2,17 +2,38 @@
   "name": "todo-app",
   "version": "0.1.0",
   "private": true,
+  "proxy": "http://localhost:8080/",
   "dependencies": {
+    "@types/draft-js": "^0.10.34",
     "@types/jest": "24.0.15",
+    "@types/nanoid": "^2.0.0",
     "@types/node": "12.0.10",
     "@types/react": "16.8.22",
     "@types/react-dom": "16.8.4",
+    "@types/react-redux": "^7.1.1",
+    "@types/redux-actions": "^2.6.1",
+    "body-parser": "^1.16.0",
+    "draft-js": "^0.11.0",
+    "es6-shim": "^0.35.5",
+    "express": "^4.14.0",
+    "nanoid": "^2.0.3",
+    "node-sass": "^4.12.0",
     "react": "^16.8.6",
+    "react-calendar": "^2.19.0",
+    "react-day-picker": "^7.3.0",
     "react-dom": "^16.8.6",
-    "react-scripts": "3.0.1",
+    "react-loader-spinner": "^2.3.0",
+    "react-redux": "^7.1.0",
+    "react-scripts": "^3.0.1",
+    "redux-actions": "^2.6.5",
+    "redux-saga": "^1.0.5",
+    "sass-loader": "^7.1.0",
+    "semantic-ui-css": "^2.4.1",
+    "semantic-ui-react": "^0.87.2",
     "typescript": "3.5.2"
   },
   "scripts": {
+    "server": "node server.js",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
@@ -32,5 +53,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "nodemon": "^1.19.1"
   }
 }

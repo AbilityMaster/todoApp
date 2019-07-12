@@ -1,12 +1,25 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
-import App from './App';
-import * as serviceWorker from './serviceWorker';
+import App from './components/App';
+import { Provider } from 'react-redux';
+import 'semantic-ui-css/semantic.min.css'
+import Api from "./api";
+import {applyMiddleware, compose, createStore} from "redux";
+import { createReducer } from './reducers';
+import {fetchConfig, fetchSelectedDays} from "./actions";
+import {getSelectedDays} from "./dataTransfer/dto";
+import createSagaMiddleware from 'redux-saga';
+import sagas from './sagas';
 
-ReactDOM.render(<App />, document.getElementById('root'));
+let apiApp = new Api();
+const sagaMiddleware = createSagaMiddleware();
+const initialState = {};
 
-// If you want your app to work offline and load faster, you can change
-// unregister() to register() below. Note this comes with some pitfalls.
-// Learn more about service workers: https://bit.ly/CRA-PWA
-serviceWorker.unregister();
+const store = createStore(createReducer(), initialState, compose(applyMiddleware(sagaMiddleware)));
+
+sagaMiddleware.run(sagas, apiApp);
+
+
+// @ts-ignore
+ReactDOM.render(<Provider store={store}><App /></Provider>, document.getElementById('root'));

@@ -1,0 +1,12 @@
+.note {
+  width: 550px;
+  background: #e0e1e2;
+  border-radius: 5px;
+  padding: 10px;
+  margin: 10px auto;
+
+  &__header {
+    font-weight: 600;
+    margin-bottom: 5px;
+  }
+}

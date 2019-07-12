@@ -1,0 +1,35 @@
+.modal__textarea {
+  -webkit-appearance: none;
+  padding: .78571429em 1em;
+  background: #fff;
+  border: 1px solid rgba(34,36,38,.15);
+  outline: 0;
+  color: rgba(0,0,0,.87);
+  border-radius: .28571429rem;
+  box-shadow: 0 0 0 0 transparent inset;
+  transition: color .1s ease,border-color .1s ease;
+  font-size: 1em;
+  line-height: 1.2857;
+  resize: vertical;
+  width: 100%;
+
+  &:focus {
+    color: rgba(0,0,0,.95);
+    border-color: #85b7d9;
+    border-radius: .28571429rem;
+    background: #fff;
+    box-shadow: 0 0 0 0 rgba(34,36,38,.35) inset;
+    -webkit-appearance: none;
+  }
+
+  &_view {
+    padding: 0;
+    border: none;
+    resize: none;
+    height: 50px;
+
+    &:hover {
+      background: rgba(78, 146, 222, 0.16);
+    }
+  }
+}
