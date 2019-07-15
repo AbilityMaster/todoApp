@@ -2,6 +2,9 @@ import { createAction } from 'redux-actions';
 
 const prefix = 'app/';
 
+export const selectDayMemory = createAction(prefix + 'SELECT_DAY_FROM_CONTEXT_MENU');
+export const openContextMenu = createAction(prefix + 'OPEN_CONTEXT_MENU');
+export const hideContextMenu = createAction(prefix + 'HIDE_CONTEXT_MENU');
 export const openModalForAdd = createAction(prefix + 'OPEN_MODAL_WINDOW_FOR_ADD');
 export const hideModalForAdd = createAction(prefix + 'HIDE_MODAL_WINDOW_FOR_ADD');
 

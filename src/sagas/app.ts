@@ -4,7 +4,6 @@ import {
     fetchConfig,
     showLoader,
     hideLoader,
-    initPost,
     makeDoneTask,
     deleteTask, changeTask, addTask
 } from "../actions";
@@ -14,9 +13,9 @@ import {getSelectedDays} from "../dataTransfer/dto";
 // @ts-ignore
 function* fetchConfigApp(apiApp, action) {
     try {
-        console.error('[saga ===> FETCH CONFIG ===> ]');
+        console.warn('[saga ===> FETCH CONFIG ===> ]');
         yield put(showLoader());
-        yield delay(3000);
+        yield delay(100);
         const config = yield apiApp.getConfig();
         const selectedDays = getSelectedDays(config);
         yield put(fetchSelectedDays(selectedDays));

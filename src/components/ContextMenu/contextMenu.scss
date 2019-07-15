@@ -1,0 +1,26 @@
+.context-menu {
+  position: absolute;
+  left: 400px;
+  top: 100px;
+  background: #fff;
+  border: 1px solid #cacaca;
+  z-index: 99;
+  &__action {
+    padding: 8px 7px;
+    &_add {
+      &:after {
+        content: "";
+        position: absolute;
+        border-bottom: 0.5px solid #e2dddd;
+        left: 0;
+        right: 0;
+        top: 35px;
+      }
+    }
+    &:hover {
+      background: #4A90E2;
+      color: #fff;
+      cursor: pointer;
+    }
+  }
+}

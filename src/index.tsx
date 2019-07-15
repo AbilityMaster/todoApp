@@ -7,8 +7,6 @@ import 'semantic-ui-css/semantic.min.css'
 import Api from "./api";
 import {applyMiddleware, compose, createStore} from "redux";
 import { createReducer } from './reducers';
-import {fetchConfig, fetchSelectedDays} from "./actions";
-import {getSelectedDays} from "./dataTransfer/dto";
 import createSagaMiddleware from 'redux-saga';
 import sagas from './sagas';
 
@@ -20,6 +18,4 @@ const store = createStore(createReducer(), initialState, compose(applyMiddleware
 
 sagaMiddleware.run(sagas, apiApp);
 
-
-// @ts-ignore
 ReactDOM.render(<Provider store={store}><App /></Provider>, document.getElementById('root'));

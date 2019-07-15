@@ -1,5 +1,5 @@
 import * as React from 'react';
-import DayPicker from 'react-day-picker';
+import DayPicker, {DayModifiers} from 'react-day-picker';
 import nanoid from "nanoid";
 import { connect } from "react-redux";
 
@@ -20,11 +20,12 @@ import {
     openModalForAdd,
     selectDay,
     setId,
-    initLoad, initPost
+    initLoad, initPost, openContextMenu, selectDayMemory, hideContextMenu
 } from "../../actions";
 import "./app.scss";
 import "react-day-picker/lib/style.css";
 import {IProps} from "../../interfaces/interfaces";
+import ContextMenu from "../ContextMenu";
 
 interface AppState {
     forScroll: number;
@@ -47,9 +48,21 @@ class App extends React.Component<IProps> {
         openModalForAdd();
     };
 
+    handleClickOut = (event: any) => {
+        const { hideContextMenu, isShowContextMenu } = this.props;
+
+        const elem = document.elementFromPoint(event.clientX, event.clientY);
+        const last = elem ? elem.closest('.context-menu') : null;
+
+        if (!last && isShowContextMenu) {
+            hideContextMenu();
+        }
+    };
+
     componentDidMount(): void {
         const { initLoad } = this.props;
 
+        document.addEventListener('click', this.handleClickOut);
         initLoad();
     }
 
@@ -69,7 +82,7 @@ class App extends React.Component<IProps> {
     };
 
     addTask = (data: string): void => {
-      const { config, currentId, listSelectedDays, addTask, initPost } = this.props;
+      const { config, currentId, listSelectedDays, addTask } = this.props;
 
       if (data === '') {
           return;
@@ -132,6 +145,7 @@ class App extends React.Component<IProps> {
     }
 
     handleDayClick = (day : Date, { selected }: any) => {
+
         const { currentId, setId, selectDay } = this.props;
 
         const id = transformDate(day);
@@ -238,14 +252,23 @@ class App extends React.Component<IProps> {
              `
     }
 
+    handleContextMenuDayClick = (day: Date, modifiers: DayModifiers, e: React.MouseEvent<HTMLDivElement>) => {
+        const { openContextMenu, selectDayMemory } = this.props;
+
+        e.preventDefault();
+        openContextMenu({ x: `${e.clientX}px`, y: `${e.clientY}px` });
+        selectDayMemory(day);
+    };
+
     render() {
-        const { selectedDay, isShowModal, isShowLoader } = this.props;
+        const { selectedDay, isShowModal, isShowLoader, isShowContextMenu, x, y } = this.props;
 
         return (
             <React.Fragment>
+                { isShowContextMenu ? <ContextMenu openModal={this.openModal}  x={x} y={y} /> : null }
                 { isShowLoader ? <Loader /> : null}
                 <div style={isShowLoader ? {filter: 'blur(6px)'} : {}}>
-                <div className="app-name">ToDo App</div>
+                <div className="app-name" onContextMenu={(event: any) => console.warn(event.keyCode)}>ToDo App</div>
                 <div className={"container"}>
                     <style>{App.calcSelectedStyles}</style>
                     <DayPicker
@@ -254,6 +277,7 @@ class App extends React.Component<IProps> {
                         weekdaysShort={WEEKDAYS_SHORT}
                         className={"center"}
                         onDayClick={this.handleDayClick}
+                        onContextMenu={this.handleContextMenuDayClick}
                         modifiers={this.modifiers}
                         // initialMonth={new Date(2017, 3)}
                         selectedDays={
@@ -296,20 +320,26 @@ const mapStateToProps = (state: any) => ({
    childrenNumber: state.app.childrenNumber,
    selectedDay: state.app.selectedDay,
    listSelectedDays: state.app.listSelectedDays,
-   isShowLoader: state.app.isShowLoader
+   isShowLoader: state.app.isShowLoader,
+   isShowContextMenu: state.app.isShowContextMenu,
+   x: state.app.x,
+   y: state.app.y
 });
 
 const mapDispatchToProps = (dispatch: any) => ({
     openModalForAdd: () => dispatch(openModalForAdd()),
     hideModalForAdd: () => dispatch(hideModalForAdd()),
     selectDay: (data: Date) => dispatch(selectDay(data)),
+    selectDayMemory: (data: Date) => dispatch(selectDayMemory(data)),
     deleteTask: (data: object) => dispatch(deleteTask(data)),
     changeTask: (data: object) => dispatch(changeTask(data)),
     makeDoneTask: (data: any) => dispatch(makeDoneTask(data)),
     addTask: (data: object) => dispatch(addTask(data)),
     setId: (id: string) => dispatch(setId(id)),
     initLoad: () => dispatch(initLoad()),
-    initPost: (config: object) => dispatch(initPost(config))
+    initPost: (config: object) => dispatch(initPost(config)),
+    openContextMenu: (data: object) => dispatch(openContextMenu(data)),
+    hideContextMenu: () => dispatch(hideContextMenu())
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(App);

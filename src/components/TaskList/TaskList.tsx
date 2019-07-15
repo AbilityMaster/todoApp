@@ -2,8 +2,6 @@ import * as React from 'react';
 import './taskList.scss';
 import ModalWindow from "../ModalWindow";
 import {MODAL_TYPE} from "../../constants";
-import {connect} from "react-redux";
-import {makeDone} from "../../actions";
 import {ITaskList} from "../../interfaces/interfaces";
 
 interface Istate {
@@ -74,7 +72,7 @@ class TaskList extends React.Component<ITaskList> {
     };
 
     handleChange = () => {
-        const { makeDoneTask, id, makeDone } = this.props;
+        const { makeDoneTask, id } = this.props;
 
         let checked = false;
 
@@ -82,7 +80,6 @@ class TaskList extends React.Component<ITaskList> {
             checked = this.$doneInput.current.checked;
         }
 
-     //   makeDone({id, checked});
         makeDoneTask(id, checked);
     };
 
@@ -128,8 +125,4 @@ class TaskList extends React.Component<ITaskList> {
     }
 }
 
-const mapDispatchToProps = (dispatch: any) => ({
-    makeDone: (value: any) => dispatch(makeDone(value))
-});
-
-export default connect(null, mapDispatchToProps)(TaskList);
+export default TaskList;

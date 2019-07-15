@@ -7,12 +7,21 @@ import {
     setId,
     selectDay,
     deleteTask,
-    changeTask, fetchConfig, fetchSelectedDays, showLoader, hideLoader, initPost, updateEditorState
+    changeTask,
+    fetchConfig,
+    fetchSelectedDays,
+    showLoader,
+    hideLoader,
+    initPost,
+    updateEditorState,
+    openContextMenu,
+    selectDayMemory, hideContextMenu
 } from "../actions";
 import {handleActions} from "redux-actions";
 import { EditorState } from 'draft-js';
 
 const initialState = {
+    isShowContextMenu: false,
     editorState: EditorState.createEmpty(),
     isShowModal: false,
     config: [],
@@ -20,7 +29,10 @@ const initialState = {
     childrenNumber: 0,
     selectedDay: new Date(),
     listSelectedDays: [],
-    isShowLoader: false
+    isShowLoader: false,
+    x: '',
+    y: '',
+    tempSelectedDay: new Date()
 };
 
 Object.freeze(initialState);
@@ -143,6 +155,32 @@ export default handleActions(
                 ...state
             }
         },
+        // @ts-ignore
+        [openContextMenu]: (state, action) => {
+            console.log(action.type);
+            return {
+                ...state,
+                x: action.payload.x,
+                y: action.payload.y,
+                isShowContextMenu: true,
+            }
+        },
+        // @ts-ignore
+        [hideContextMenu]: (state, action) => {
+            console.log(action.type);
+            return {
+                ...state,
+                isShowContextMenu: false,
+            }
+        },
+        // @ts-ignore
+        [selectDayMemory]: (state, action) => {
+            console.log(action.type);
+            return {
+                ...state,
+                tempSelectedDay: action.payload
+            }
+        }
     },
     initialState
 );

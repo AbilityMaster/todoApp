@@ -18,7 +18,6 @@ export default class Api {
             },
             body: JSON.stringify(config)
         }).then(function(response) {
-            console.log('THIS WORK API METHOD');
             return response.json();
         });
     }
@@ -31,7 +30,6 @@ export default class Api {
             },
             body: JSON.stringify({ idDay, idTask, checked })
         }).then(function(response) {
-            console.log('API --- changeTaskStatus');
             return response.json();
         });
     }
@@ -40,8 +38,6 @@ export default class Api {
         fetch(`/api/users/${idDay}/${idTask}`, {
             method: 'DELETE'
         }).then(function(response) {
-            console.log('API --- changeTaskStatus', idDay, idTask );
-            console.log(response);
         }).catch(err => console.log(err));
     }
 
@@ -53,7 +49,6 @@ export default class Api {
             },
             body: JSON.stringify({ idDay, idTask, data })
         }).then(function(response) {
-            console.log('API --- changeTaskStatus');
             return response.json();
         });
     }

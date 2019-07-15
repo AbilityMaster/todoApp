@@ -4,7 +4,7 @@ import './modalWindow.scss';
 import Button from "../Button";
 import TextArea from "../TextArea";
 import {MODAL_TYPE} from "../../constants";
-import { updateEditorState} from "../../actions";
+import {hideContextMenu, updateEditorState} from "../../actions";
 import {connect} from "react-redux";
 
 interface Props {
@@ -21,6 +21,8 @@ interface Props {
  changeTask?: (id: string, data: string) => void;
  editorState: any;
  updateEditorState: (data: any) => void;
+ isShowContextMenu: boolean;
+ hideContextMenu: () => void;
 }
 
 interface State {
@@ -71,7 +73,7 @@ class ModalWindow extends React.Component<Props> {
     };
 
     onClick = () => {
-        const { addTask, changeTask, type, id } = this.props;
+        const { addTask, changeTask, type, id, isShowContextMenu, hideContextMenu } = this.props;
 
         if ((type === MODAL_TYPE.CHANGE) && changeTask && id) {
            changeTask(id, this.$textarea.current.value())
@@ -79,6 +81,10 @@ class ModalWindow extends React.Component<Props> {
 
         if (addTask) {
             addTask(this.$textarea.current.value());
+        }
+
+        if (isShowContextMenu) {
+            hideContextMenu();
         }
     };
 
@@ -93,7 +99,7 @@ class ModalWindow extends React.Component<Props> {
     };
 
     render() {
-        const { header, description, value, type, className, textAreaClassName, buttonLabel, editorState } = this.props;
+        const { header, description, value, type, className, textAreaClassName, buttonLabel } = this.props;
 
         return (
             <React.Fragment>
@@ -112,11 +118,13 @@ class ModalWindow extends React.Component<Props> {
 }
 
 const mapDispatchToProps = (dispatch: any) => ({
-    updateEditorState: (data: any) => dispatch(updateEditorState(data))
+    updateEditorState: (data: any) => dispatch(updateEditorState(data)),
+    hideContextMenu: () => dispatch(hideContextMenu())
 });
 
 const mapStateToProps = (state: any) => ({
-    editorState: state.app.editorState
+    editorState: state.app.editorState,
+    isShowContextMenu: state.app.isShowContextMenu
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(ModalWindow);

@@ -1,4 +1,7 @@
 export interface IProps {
+    x: string;
+    y: string;
+    isShowContextMenu: boolean;
     isShowLoader: boolean;
     isShowModal: boolean;
     config: {id: string, tasks: ITask [] } [];
@@ -13,9 +16,12 @@ export interface IProps {
     setId: (id: string) => void;
     changeTask: ({}: Object) => void;
     selectDay: (day: Date) => void;
+    selectDayMemory: (day: Date) => void;
     deleteTask: ({}: Object) => void;
     initLoad: () => void;
     initPost: (config: object) => void;
+    openContextMenu: ({}: Object) => void;
+    hideContextMenu: () => void;
 }
 
 export interface ITask {
@@ -44,11 +50,20 @@ export interface ITaskList {
     makeDoneTask: (id: string, checked: boolean) => void;
     id: string;
     isDone: boolean;
-    makeDone: (data: any) => void;
 }
 
 export interface ITextArea {
     className?: string;
     value?: string;
     type?: string;
+}
+
+export interface IContextMenu {
+    currentId: string;
+    selectDay: (day: Date) => void;
+    setId: (data: string) => void;
+    openModal: () => void;
+    tempSelectedDay: Date;
+    x: string;
+    y: string;
 }
