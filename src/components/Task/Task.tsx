@@ -1,14 +1,14 @@
 import * as React from 'react';
-import './taskList.scss';
+import './task.scss';
 import ModalWindow from "../ModalWindow";
 import {MODAL_TYPE} from "../../constants";
-import {ITaskList} from "../../interfaces/interfaces";
+import {ITaskComponent} from "../../interfaces/interfaces";
 
 interface Istate {
     isShow: boolean;
 }
 
-class TaskList extends React.Component<ITaskList> {
+class Task extends React.Component<ITaskComponent> {
     state: Istate = {
         isShow: false
     };
@@ -118,11 +118,11 @@ class TaskList extends React.Component<ITaskList> {
                            id="checkbox-1"
                        />
                        </div>
-                       <i onClick={this.delete} className="task__delete demo-icon icon-cancel">&#xe800;</i>
+                       <i onClick={(event) => { this.delete(); event.stopPropagation()}} className="task__delete demo-icon icon-cancel">&#xe800;</i>
                    </div>
             </React.Fragment>
        );
     }
 }
 
-export default TaskList;
+export default Task;

@@ -6,43 +6,18 @@ import TextArea from "../TextArea";
 import {MODAL_TYPE} from "../../constants";
 import {hideContextMenu, updateEditorState} from "../../actions";
 import {connect} from "react-redux";
-
-interface Props {
- addTask?(data: string): void;
- onBlur?(data: boolean): void;
- header?: string;
- description?: string;
- value?: string;
- type?: string;
- className?: string;
- textAreaClassName?: string;
- buttonLabel?: string;
- id?: string;
- changeTask?: (id: string, data: string) => void;
- editorState: any;
- updateEditorState: (data: any) => void;
- isShowContextMenu: boolean;
- hideContextMenu: () => void;
-}
+import {IModalWindow} from "../../interfaces/interfaces";
 
 interface State {
     isShowTextarea: boolean;
 }
 
-class ModalWindow extends React.Component<Props> {
-
+class ModalWindow extends React.Component<IModalWindow> {
     state: State= {
         isShowTextarea: true
     };
-
-    el: any;
-    $textarea: any;
-
-    constructor(props: Props) {
-        super(props);
-        this.el = document.querySelector('#root');
-        this.$textarea = React.createRef();
-    }
+    el: any = document.querySelector('#root');
+    $textarea: any = React.createRef();
 
     enterPressed = (event: KeyboardEvent) => {
         if (event.key === 'Enter') {

@@ -15,7 +15,7 @@ function* fetchConfigApp(apiApp, action) {
     try {
         console.warn('[saga ===> FETCH CONFIG ===> ]');
         yield put(showLoader());
-        yield delay(100);
+        yield delay(1000);
         const config = yield apiApp.getConfig();
         const selectedDays = getSelectedDays(config);
         yield put(fetchSelectedDays(selectedDays));
@@ -41,8 +41,8 @@ function* sendToServer(apiApp, action) {
 function* sendStatusDoneTask(apiApp, action) {
     try {
         console.warn('[saga ===> SEND TO SERVER DONE STATUS TASK ===> ]');
-        const { currentId: idDay, id: idTask, checked } = action.payload;
-        yield apiApp.changeTaskStatus(idDay, idTask, checked);
+        const { id: idTask, checked } = action.payload;
+        yield apiApp.changeTaskStatus(idTask, checked);
     } catch (e) {
         console.error('[saga ===> SEND TO SERVER DONE STATUS TASK ===> error ]');
     }
@@ -52,8 +52,8 @@ function* sendStatusDoneTask(apiApp, action) {
 function* deleteTaskSaga(apiApp, action) {
     try {
         console.warn('[saga ===> DELETE TASK ===> ]');
-        const { currentId: idDay, id: idTask } = action.payload;
-        yield apiApp.delete(idDay, idTask);
+        const { id: idTask } = action.payload;
+        yield apiApp.delete(idTask);
     } catch (e) {
         console.error('[saga ===> DELETE TASK ===> error');
     }
@@ -63,8 +63,8 @@ function* deleteTaskSaga(apiApp, action) {
 function* changeTaskData(apiApp, action) {
     try {
         console.warn('[saga ===> CHANGE TASK ===> ]');
-        const { idDay, idTask, data } = action.payload;
-        yield apiApp.change(idDay, idTask, data);
+        const { idTask, data } = action.payload;
+        yield apiApp.change(idTask, data);
     } catch (e) {
         console.error('[saga ===> CHANGE TASK ===> error ]');
     }

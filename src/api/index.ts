@@ -22,32 +22,32 @@ export default class Api {
         });
     }
 
-    changeTaskStatus(idDay: string, idTask: string, checked: boolean) {
+    changeTaskStatus(idTask: string, checked: boolean) {
         fetch('/api/users', {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ idDay, idTask, checked })
+            body: JSON.stringify({ idTask, checked })
         }).then(function(response) {
             return response.json();
         });
     }
 
-    delete(idDay: string, idTask: string) {
-        fetch(`/api/users/${idDay}/${idTask}`, {
+    delete(idTask: string) {
+        fetch(`/api/users/${idTask}`, {
             method: 'DELETE'
         }).then(function(response) {
         }).catch(err => console.log(err));
     }
 
-    change(idDay: string, idTask: string, data: string) {
+    change(idTask: string, data: string) {
         fetch('/api/todo/modify', {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ idDay, idTask, data })
+            body: JSON.stringify({ idTask, data })
         }).then(function(response) {
             return response.json();
         });

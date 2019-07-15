@@ -27,6 +27,6 @@ export const showLoader = createAction(prefix + 'SHOW_LOADER');
 export const hideLoader = createAction(prefix + 'HIDE_LOADER');
 export const initPost = createAction(prefix + 'INIT_POST');
 
-/* TaskList component */
+/* Task component */
 
 export const updateEditorState = createAction(prefix + 'INIT_POST');

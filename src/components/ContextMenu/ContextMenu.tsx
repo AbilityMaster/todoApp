@@ -4,10 +4,9 @@ import {IContextMenu} from "../../interfaces/interfaces";
 import {transformDate} from "../../utils/utils";
 import {connect} from "react-redux";
 import {selectDay, setId} from "../../actions";
-import {useEffect} from "react";
 
 function ContextMenu(props: IContextMenu) {
-    const { x, y, openModal  } = props;
+    const { x, y } = props;
 
     const selectDay = () => {
         const { currentId, setId, tempSelectedDay, selectDay, openModal } = props;

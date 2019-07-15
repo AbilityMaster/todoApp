@@ -1,10 +1,10 @@
 export interface IProps {
+    config: ITask [];
     x: string;
     y: string;
     isShowContextMenu: boolean;
     isShowLoader: boolean;
     isShowModal: boolean;
-    config: {id: string, tasks: ITask [] } [];
     currentId: string;
     childrenNumber: number;
     selectedDay: Date | undefined;
@@ -15,7 +15,7 @@ export interface IProps {
     addTask: ({}: Object) => void;
     setId: (id: string) => void;
     changeTask: ({}: Object) => void;
-    selectDay: (day: Date) => void;
+    selectDay: (data: Date) => void;
     selectDayMemory: (day: Date) => void;
     deleteTask: ({}: Object) => void;
     initLoad: () => void;
@@ -25,6 +25,7 @@ export interface IProps {
 }
 
 export interface ITask {
+    idDay?: string;
     id: string;
     description: string;
     isDone: boolean;
@@ -42,14 +43,11 @@ export interface INote {
 }
 
 
-export interface ITaskList {
-    description: string;
+export interface ITaskComponent extends ITask{
     index: number;
     deleteTask: (id: string) => void;
     changeTask: (id: string, data: string) => void;
     makeDoneTask: (id: string, checked: boolean) => void;
-    id: string;
-    isDone: boolean;
 }
 
 export interface ITextArea {
@@ -60,10 +58,28 @@ export interface ITextArea {
 
 export interface IContextMenu {
     currentId: string;
-    selectDay: (day: Date) => void;
+    selectDay: (data: Date) => void;
     setId: (data: string) => void;
     openModal: () => void;
     tempSelectedDay: Date;
     x: string;
     y: string;
+}
+
+export interface IModalWindow {
+    addTask?(data: string): void;
+    onBlur?(data: boolean): void;
+    header?: string;
+    description?: string;
+    value?: string;
+    type?: string;
+    className?: string;
+    textAreaClassName?: string;
+    buttonLabel?: string;
+    id?: string;
+    changeTask?: (id: string, data: string) => void;
+    editorState: any;
+    updateEditorState: (data: any) => void;
+    isShowContextMenu: boolean;
+    hideContextMenu: () => void;
 }

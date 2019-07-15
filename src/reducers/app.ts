@@ -21,10 +21,11 @@ import {handleActions} from "redux-actions";
 import { EditorState } from 'draft-js';
 
 const initialState = {
+    config: [],
+    tasks: [],
     isShowContextMenu: false,
     editorState: EditorState.createEmpty(),
     isShowModal: false,
-    config: [],
     currentId: transformDate(new Date()),
     childrenNumber: 0,
     selectedDay: new Date(),
@@ -80,7 +81,7 @@ export default handleActions(
                 ...state,
                 config: action.payload.config,
                 isShowModal: action.payload.isShowModal,
-                listSelectedDays: action.payload.listSelectedDays,
+                listSelectedDays: action.payload.listSelectedDays
             }
         },
         // @ts-ignore

@@ -4,7 +4,7 @@ import nanoid from "nanoid";
 import { connect } from "react-redux";
 
 import ModalWindow from "../ModalWindow";
-import TaskList from "../TaskList";
+import Task from "../Task";
 import Button from "../Button";
 import Note from "../Note";
 import Loader from "../Loader";
@@ -24,7 +24,7 @@ import {
 } from "../../actions";
 import "./app.scss";
 import "react-day-picker/lib/style.css";
-import {IProps} from "../../interfaces/interfaces";
+import {IProps, ITask} from "../../interfaces/interfaces";
 import ContextMenu from "../ContextMenu";
 
 interface AppState {
@@ -69,10 +69,8 @@ class App extends React.Component<IProps> {
     makeDoneTask = (id: string, checked: boolean): void => {
         const { config, currentId, makeDoneTask } = this.props;
 
-        const _config = JSON.parse(JSON.stringify(config));
-        const configByDay = _config.find((value: { id: string; }) => (value.id === currentId));
-        const tasks = configByDay ? configByDay.tasks : [];
-        const task = tasks.find((value: { id: string; }) => (value.id === id));
+        const _config = deepclone(config);
+        const task = _config.find((value: any) => (value.id === id));
 
         if (task) {
             task.isDone = checked;
@@ -83,35 +81,27 @@ class App extends React.Component<IProps> {
 
     addTask = (data: string): void => {
       const { config, currentId, listSelectedDays, addTask } = this.props;
+      const _config: ITask [] = deepclone(config);
 
       if (data === '') {
           return;
       }
 
-      const existsDayConfig = config ? config.find(value => (value.id === currentId)) : null;
-      const tasks = existsDayConfig ? existsDayConfig.tasks : [];
-
-      const task: {id: string, description: string, isDone: false} = {
+      _config.push({
+          idDay: currentId,
           id: nanoid(7),
           description: data,
           isDone: false
-      };
+      });
 
-      if (existsDayConfig) {
-          tasks.push(task);
-      } else {
-          config.push({
-              id: currentId,
-              tasks: [ task ]
-          });
-      }
+      const tasks = _config.filter(value => (value.idDay === currentId));
 
       if (!listSelectedDays.find( value => (transformDate(value) === currentId))) {
           listSelectedDays.push(transformId(currentId));
       }
 
       this.setState({ forScroll: tasks.length });
-      addTask({config, isShowModal: false, listSelectedDays});
+      addTask({config: _config, isShowModal: false, listSelectedDays});
     };
 
     componentDidUpdate(prevProps: Readonly<IProps>, prevState: Readonly<{}>, snapshot?: any): void {
@@ -135,17 +125,20 @@ class App extends React.Component<IProps> {
             return true;
         }
 
-        const taskByDay = config.find((value) => (value.id === currentId));
+        const tasks = config.filter((value) => {
+            if (value.idDay === currentId) {
+                return value;
+            }
+        });
 
-        if (!taskByDay) {
+        if (!tasks) {
             return true;
         }
 
-        return (taskByDay.tasks.length === 0);
+        return (tasks.length === 0);
     }
 
-    handleDayClick = (day : Date, { selected }: any) => {
-
+    handleDayClick = (day : Date) => {
         const { currentId, setId, selectDay } = this.props;
 
         const id = transformDate(day);
@@ -164,14 +157,8 @@ class App extends React.Component<IProps> {
 
         const { currentId, config, changeTask } = this.props;
         const _config = deepclone(config);
-
-        const configByDay = _config.find((value: { id: string, tasks: { id: string, description: string, isDone: boolean }[] }) => (value.id === currentId));
-        const tasks = configByDay? configByDay.tasks : [];
-        const task = tasks.find((value: { id: string, description: string, isDone: boolean }) => (value.id === id ));
-
-        if (task) {
-            task.description = data;
-        }
+        const task = _config.find((value: any) => (value.id === id));
+        task.description = data;
 
         changeTask({ config: _config, idDay: currentId, idTask: id, data });
     };
@@ -180,11 +167,14 @@ class App extends React.Component<IProps> {
         const { currentId, config, listSelectedDays, deleteTask } = this.props;
         const _config = deepclone(config);
 
-        const configByDay = _config.find((value: { id: string, tasks: { id: string, description: string, isDone: boolean }[] }) => (value.id === currentId));
-        const tasks = configByDay ? configByDay.tasks : [];
-        const forDel = tasks.findIndex((value: { id: string, description: string, isDone: boolean }) => (value.id === id ));
+        const indexDel = _config.findIndex((value: any) => (value.id === id));
+        _config.splice(indexDel, 1);
 
-        tasks.splice(forDel, 1);
+        const tasks = _config.filter((value: any) => {
+            if (value.idDay === currentId) {
+                return value;
+            }
+        });
 
         if (tasks.length === 0) {
            const index = listSelectedDays.findIndex(value => (value === transformId(currentId)) );
@@ -208,15 +198,19 @@ class App extends React.Component<IProps> {
     renderTasks() {
         const { config, currentId } = this.props;
 
-        const configByDay = config.find( value => (value.id === currentId));
+        const tasks = config.filter( value => {
+            if (value.idDay === currentId) {
+                return value;
+            }
+        });
 
-        if (!configByDay) {
+        if (!tasks) {
             return null;
         }
 
-        return configByDay.tasks.map((value, index) => {
+        return tasks.map((value, index) => {
             return (
-                <TaskList
+                <Task
                     key={value.id}
                     id={value.id}
                     index={index}
@@ -314,6 +308,7 @@ class App extends React.Component<IProps> {
 }
 
 const mapStateToProps = (state: any) => ({
+   tasks: state.app.tasks,
    isShowModal: state.app.isShowModal,
    config: state.app.config,
    currentId: state.app.currentId,
@@ -329,7 +324,7 @@ const mapStateToProps = (state: any) => ({
 const mapDispatchToProps = (dispatch: any) => ({
     openModalForAdd: () => dispatch(openModalForAdd()),
     hideModalForAdd: () => dispatch(hideModalForAdd()),
-    selectDay: (data: Date) => dispatch(selectDay(data)),
+    selectDay: (data: object) => dispatch(selectDay(data)),
     selectDayMemory: (data: Date) => dispatch(selectDayMemory(data)),
     deleteTask: (data: object) => dispatch(deleteTask(data)),
     changeTask: (data: object) => dispatch(changeTask(data)),
