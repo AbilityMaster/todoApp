@@ -59,9 +59,11 @@ export interface ITextArea {
 export interface IContextMenu {
     currentId: string;
     selectDay: (data: Date) => void;
+    fetchConfig: (data: ITask []) => void;
     setId: (data: string) => void;
     openModal: () => void;
     tempSelectedDay: Date;
+    config: ITask [];
     x: string;
     y: string;
 }

@@ -9,7 +9,13 @@ import Button from "../Button";
 import Note from "../Note";
 import Loader from "../Loader";
 
-import {deepclone, getFormatDate, transformDate, transformId} from "../../utils/utils";
+import {
+    deepclone,
+    getFormatDate,
+    transformDate,
+    transformDateArray,
+    transformId
+} from "../../utils/utils";
 import {MODAL_TYPE, MONTHS, WEEKDAYS_LONG, WEEKDAYS_SHORT} from "../../constants";
 import {
     addTask,
@@ -225,10 +231,33 @@ class App extends React.Component<IProps> {
     }
 
     get modifiers() {
-        const { listSelectedDays } = this.props;
+        const { listSelectedDays, config } = this.props;
+
+        const dates = transformDateArray(listSelectedDays);
+        let tasksPerDay = [];
+        const doneAllTasks = [];
+        const doneNotAllTasks = [];
+
+        for (let i = 0; i < dates.length; i++) {
+            let counter = 0;
+            tasksPerDay = config.filter(value => (value.idDay === dates[i]));
+
+            for (let i = 0; i < tasksPerDay.length; i++) {
+                if (tasksPerDay[i].isDone) {
+                    counter++;
+                }
+            }
+
+            if (tasksPerDay.length === counter) {
+                doneAllTasks.push(transformId(dates[i]));
+            } else {
+                doneNotAllTasks.push(transformId(dates[i]));
+            }
+        }
 
         return {
-            highlighted: listSelectedDays
+            highlighted: doneNotAllTasks,
+            done: doneAllTasks
         };
     }
 
@@ -243,7 +272,18 @@ class App extends React.Component<IProps> {
                  .DayPicker-Day--highlighted:hover {
                        background: #a2340d!important;
                  }
-             `
+               
+                 .DayPicker-Day--done{
+                    background-color: #348c1e;
+                    color: white;
+                    position: relative;
+                    border-radius: 0!important;
+                 }
+                 
+                 .DayPicker-Day--done:hover {
+                 background:   #386f2a!important;
+                 }
+             `;
     }
 
     handleContextMenuDayClick = (day: Date, modifiers: DayModifiers, e: React.MouseEvent<HTMLDivElement>) => {
@@ -252,6 +292,10 @@ class App extends React.Component<IProps> {
         e.preventDefault();
         openContextMenu({ x: `${e.clientX}px`, y: `${e.clientY}px` });
         selectDayMemory(day);
+    };
+
+    handleMonthChange = (day: Date) => {
+        console.warn(day);
     };
 
     render() {
@@ -270,6 +314,7 @@ class App extends React.Component<IProps> {
                         weekdaysLong={WEEKDAYS_LONG}
                         weekdaysShort={WEEKDAYS_SHORT}
                         className={"center"}
+                        onMonthChange={this.handleMonthChange}
                         onDayClick={this.handleDayClick}
                         onContextMenu={this.handleContextMenuDayClick}
                         modifiers={this.modifiers}

@@ -2,6 +2,12 @@ export function transformDate(date: Date) {
     return `${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()}`;
 }
 
+export function transformDateArray(data: Date[]) {
+    return data.map(value => {
+        return `${value.getFullYear()}-${value.getMonth()+1}-${value.getDate()}`;
+    });
+}
+
 export function transformId(id: string) {
     return new Date(Date.parse(id));
 }
