@@ -22,6 +22,8 @@ export interface IProps {
     initPost: (config: object) => void;
     openContextMenu: ({}: Object) => void;
     hideContextMenu: () => void;
+    updateCurrentMonth: (data: Date) => void;
+    currentMonth: Date;
 }
 
 export interface ITask {

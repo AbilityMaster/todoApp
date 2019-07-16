@@ -15,6 +15,7 @@ export const setId = createAction(prefix + 'SET_ID_DAY');
 export const selectDay = createAction(prefix + 'SELECT_DAY');
 export const deleteTask = createAction(prefix + 'DELETE_TASK');
 export const changeTask = createAction(prefix + 'CHANGE_TASK');
+export const updateCurrentMonth = createAction(prefix + 'INIT_POST');
 
 
 export const makeDone = createAction(prefix + 'MAKE_DONE');

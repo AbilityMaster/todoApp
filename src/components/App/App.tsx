@@ -26,7 +26,7 @@ import {
     openModalForAdd,
     selectDay,
     setId,
-    initLoad, initPost, openContextMenu, selectDayMemory, hideContextMenu
+    initLoad, initPost, openContextMenu, selectDayMemory, hideContextMenu, updateCurrentMonth
 } from "../../actions";
 import "./app.scss";
 import "react-day-picker/lib/style.css";
@@ -231,7 +231,17 @@ class App extends React.Component<IProps> {
     }
 
     get modifiers() {
-        const { listSelectedDays, config } = this.props;
+        const { config, currentMonth } = this.props;
+        let { listSelectedDays } = this.props;
+
+        if (currentMonth) {
+            listSelectedDays =  listSelectedDays.filter(value => {
+                if (value.getMonth() === currentMonth.getMonth()) {
+
+                    return value;
+                }
+            });
+        }
 
         const dates = transformDateArray(listSelectedDays);
         let tasksPerDay = [];
@@ -295,7 +305,7 @@ class App extends React.Component<IProps> {
     };
 
     handleMonthChange = (day: Date) => {
-        console.warn(day);
+        this.props.updateCurrentMonth(day);
     };
 
     render() {
@@ -346,7 +356,7 @@ class App extends React.Component<IProps> {
                         onBlur={this.onBlur}
                         addTask={this.addTask}
                     /> : null}
-    </div>
+                </div>
             </React.Fragment>
         )
     }
@@ -363,7 +373,8 @@ const mapStateToProps = (state: any) => ({
    isShowLoader: state.app.isShowLoader,
    isShowContextMenu: state.app.isShowContextMenu,
    x: state.app.x,
-   y: state.app.y
+   y: state.app.y,
+   currentMonth: state.app.currentMonth
 });
 
 const mapDispatchToProps = (dispatch: any) => ({
@@ -379,7 +390,8 @@ const mapDispatchToProps = (dispatch: any) => ({
     initLoad: () => dispatch(initLoad()),
     initPost: (config: object) => dispatch(initPost(config)),
     openContextMenu: (data: object) => dispatch(openContextMenu(data)),
-    hideContextMenu: () => dispatch(hideContextMenu())
+    hideContextMenu: () => dispatch(hideContextMenu()),
+    updateCurrentMonth: (data: Date) => dispatch(updateCurrentMonth(data))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(App);

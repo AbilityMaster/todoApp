@@ -15,7 +15,7 @@ import {
     initPost,
     updateEditorState,
     openContextMenu,
-    selectDayMemory, hideContextMenu
+    selectDayMemory, hideContextMenu, updateCurrentMonth
 } from "../actions";
 import {handleActions} from "redux-actions";
 import { EditorState } from 'draft-js';
@@ -33,7 +33,8 @@ const initialState = {
     isShowLoader: false,
     x: '',
     y: '',
-    tempSelectedDay: new Date()
+    tempSelectedDay: new Date(),
+    currentMonth: ''
 };
 
 Object.freeze(initialState);
@@ -181,7 +182,15 @@ export default handleActions(
                 ...state,
                 tempSelectedDay: action.payload
             }
-        }
+        },
+        // @ts-ignore
+        [updateCurrentMonth]: (state, action) => {
+            console.log(action.type);
+            return {
+                ...state,
+                currentMonth: action.payload
+            }
+        },
     },
     initialState
 );
