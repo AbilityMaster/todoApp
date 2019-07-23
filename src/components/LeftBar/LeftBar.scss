@@ -1,0 +1,30 @@
+.menu {
+  position: fixed;
+  width: 240px;
+  top: 0;
+  bottom: 0;
+  border-right: 1px solid #b7b7b7;
+  background: #fff;
+  box-shadow: 0 0 10px rgba(0,0,0,0.5);
+  z-index: 99;
+
+  &__header {
+    text-align: center;
+    padding: 10px 0;
+    font-size: 1.3em;
+    font-style: italic;
+    font-weight: 600;
+    font-family: calibri;
+    border-bottom: 1px solid rgba(119, 119, 119, 0.15);
+  }
+
+  &__link {
+    padding: 10px;
+
+    &:hover {
+      background: #1254a2;
+      color: #fff;
+      cursor: pointer;
+    }
+  }
+}

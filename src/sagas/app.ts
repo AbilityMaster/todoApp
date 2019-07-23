@@ -5,7 +5,7 @@ import {
     showLoader,
     hideLoader,
     makeDoneTask,
-    deleteTask, changeTask, addTask
+    deleteTask, changeTask, addTask, saveTasks
 } from "../actions";
 import {takeLatest, put, delay} from "redux-saga/effects";
 import {getSelectedDays} from "../dataTransfer/dto";
@@ -17,7 +17,15 @@ function* fetchConfigApp(apiApp, action) {
         yield put(showLoader());
         yield delay(1000);
         const config = yield apiApp.getConfig();
-        const selectedDays = getSelectedDays(config);
+        const selectedDays = yield getSelectedDays(config);
+        // eslint-disable-next-line array-callback-return
+        const tasks = yield config.filter((value: any) => {
+            if (value.idDay === action.payload) {
+                return value;
+            }
+        });
+
+        yield put(saveTasks(tasks));
         yield put(fetchSelectedDays(selectedDays));
         yield put(fetchConfig(config));
         yield put(hideLoader());

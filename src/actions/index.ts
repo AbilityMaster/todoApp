@@ -15,7 +15,7 @@ export const setId = createAction(prefix + 'SET_ID_DAY');
 export const selectDay = createAction(prefix + 'SELECT_DAY');
 export const deleteTask = createAction(prefix + 'DELETE_TASK');
 export const changeTask = createAction(prefix + 'CHANGE_TASK');
-export const updateCurrentMonth = createAction(prefix + 'INIT_POST');
+export const updateCurrentMonth = createAction(prefix + 'UPDATE_CURRENT_DATE_FOR_DETECT_MONTH_CHANGE');
 
 
 export const makeDone = createAction(prefix + 'MAKE_DONE');
@@ -30,4 +30,14 @@ export const initPost = createAction(prefix + 'INIT_POST');
 
 /* Task component */
 
-export const updateEditorState = createAction(prefix + 'INIT_POST');
+export const updateEditorState = createAction(prefix + 'UPDATE_EDITOR_STATE');
+export const addTaskWithDraft = createAction(prefix + 'ADD_TASK_WITH_DRAFT');
+export const saveToDraftJs = createAction(prefix + 'SAVE_TO_DRAFT_JS_CONFIG');
+
+export const loadConfigToDraftJs = createAction(prefix + 'LOAD_CONFIG_TO_DRAFT_JS');
+export const saveTasks = createAction(prefix + 'SAVE_TASKS');
+
+/* Calendar */
+
+export const updateNumberOfMonths = createAction(prefix + 'UPDATE_NUMBER_OF_MONTHS');
+export const updateRangeSelected = createAction(prefix + 'UPDATE_RANGE_OF_SELECTED_DAYS');

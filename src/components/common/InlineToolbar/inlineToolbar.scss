@@ -1,0 +1,15 @@
+.editor-btns {
+  display: flex;
+
+  &__btn {
+    cursor: pointer;
+    padding: 1px 5px;
+    background: #4a90e2;
+    color: #fff;
+    margin-right: 2px;
+
+    &:hover {
+      background: #3577c5;
+    }
+  }
+}

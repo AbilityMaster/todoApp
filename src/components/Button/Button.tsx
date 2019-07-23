@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { BUTTON_TYPE } from "../../constants/const";
 import './button.scss';
-import {IButton} from "../../interfaces/interfaces";
+import {IButton} from "../../types/interfaces";
 
 const Button = ({ content, type, onClick }: IButton) => {
     let handleClick = () => {

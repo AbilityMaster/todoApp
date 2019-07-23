@@ -1,6 +1,6 @@
 import * as React from 'react';
 import './note.scss';
-import {INote} from "../../interfaces/interfaces";
+import {INote} from "../../types/interfaces";
 
 export default function Note({ header, content } : INote) {
     return (

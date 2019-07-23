@@ -9,7 +9,7 @@ export function transformDateArray(data: Date[]) {
 }
 
 export function transformId(id: string) {
-    return new Date(Date.parse(id));
+    return new Date(id);
 }
 
 export function getFormatDate(date: Date) {
@@ -20,3 +20,19 @@ export function getFormatDate(date: Date) {
 }
 
 export const deepclone = (obj: any) => JSON.parse(JSON.stringify(obj));
+
+export function getRangeFromDate(start: Date, end: Date) {
+    let range = [];
+    let startTime = start.getTime();
+    const endTime = end.getTime();
+    range.push(start);
+
+    const PERIOD = 1000 * 60 * 60 * 24;
+
+    while (startTime < endTime) {
+        range.push(new Date(startTime + PERIOD));
+        startTime += PERIOD;
+    }
+
+    return range;
+};

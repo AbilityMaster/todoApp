@@ -2,35 +2,35 @@ export interface IProps {
     config: ITask [];
     x: string;
     y: string;
+    tasks: any;
     isShowContextMenu: boolean;
     isShowLoader: boolean;
     isShowModal: boolean;
     currentId: string;
     childrenNumber: number;
-    selectedDay: Date | undefined;
+    editorState: any;
+    selectedDay: Date;
     listSelectedDays: Date [];
     openModalForAdd: () => void;
     hideModalForAdd: () => void;
-    makeDoneTask: (config: object) => void;
-    addTask: ({}: Object) => void;
-    setId: (id: string) => void;
-    changeTask: ({}: Object) => void;
-    selectDay: (data: Date) => void;
-    selectDayMemory: (day: Date) => void;
-    deleteTask: ({}: Object) => void;
-    initLoad: () => void;
-    initPost: (config: object) => void;
-    openContextMenu: ({}: Object) => void;
-    hideContextMenu: () => void;
-    updateCurrentMonth: (data: Date) => void;
     currentMonth: Date;
+    makeDoneTask: (config: object) => void;
+    addTask: (data: object) => void;
+    changeTask: (data: object) => void;
+    deleteTask: (data: object) => void;
+    initLoad: (id: string) => void;
+    openContextMenu: (data: object) => void;
+    hideContextMenu: () => void;
+    saveTasks: (data: any) => void;
 }
 
 export interface ITask {
     idDay?: string;
     id: string;
+    header: string;
     description: string;
     isDone: boolean;
+    draftJsConfig?: any;
 }
 
 export interface IButton {
@@ -47,9 +47,12 @@ export interface INote {
 
 export interface ITaskComponent extends ITask{
     index: number;
+    editorState: any;
+    updateEditorState: (data: any) => void;
     deleteTask: (id: string) => void;
     changeTask: (id: string, data: string) => void;
     makeDoneTask: (id: string, checked: boolean) => void;
+    saveToDraftJs: (config: any) => void;
 }
 
 export interface ITextArea {
@@ -71,13 +74,16 @@ export interface IContextMenu {
 }
 
 export interface IModalWindow {
-    addTask?(data: string): void;
+    addTask?(data: string, header: string, config: any): void;
     onBlur?(data: boolean): void;
+    draftJsConfig?: any;
+    config?: any;
     header?: string;
     description?: string;
     value?: string;
     type?: string;
     className?: string;
+    taskHeader?: string;
     textAreaClassName?: string;
     buttonLabel?: string;
     id?: string;

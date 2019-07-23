@@ -1,12 +1,5 @@
 .modal {
   width: 600px;
-  height: 220px;
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  margin: auto;
   z-index: 999;
   background: #fff;
   border: 1px solid #b5b5b5;
@@ -16,6 +9,10 @@
   flex-direction: column;
   justify-content: flex-start;
   align-items: flex-start;
+
+  p {
+    margin-bottom: 10px;
+  }
 
   &__box {
     position: absolute;
@@ -27,10 +24,37 @@
     border-radius: 5px;
     border: 3px solid #3057947d;
   }
+
+  &__wrapper {
+    position: absolute;
+    top: 0;
+    left: -240px;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  &__input {
+    -webkit-appearance: none;
+    padding: 10px 5px;
+    background: #fff;
+    border: 1px solid rgba(34, 36, 38, 0.15);
+    outline: 0;
+    color: rgba(0, 0, 0, 0.87);
+    box-shadow: 0 0 0 0 transparent inset;
+    transition: color .1s ease,border-color .1s ease;
+    font-size: 1em;
+    line-height: 1.2857;
+    resize: vertical;
+    width: 100%;
+    margin-bottom: 14px;
+  }
 }
 
 .layer {
-  position: absolute;
+  position: fixed;
   top: 0;
   bottom: 0;
   right: 0;

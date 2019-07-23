@@ -2,7 +2,11 @@ import * as React from 'react';
 import './task.scss';
 import ModalWindow from "../ModalWindow";
 import {MODAL_TYPE} from "../../constants";
-import {ITaskComponent} from "../../interfaces/interfaces";
+import {ITaskComponent} from "../../types/interfaces";
+import {convertFromRaw} from "draft-js";
+import { saveToDraftJs, updateEditorState} from "../../actions";
+import {connect} from 'react-redux';
+import { EditorState } from "draft-js";
 
 interface Istate {
     isShow: boolean;
@@ -50,13 +54,21 @@ class Task extends React.Component<ITaskComponent> {
     };
 
     showModal = () => {
-        const { isDone } = this.props;
+        const { isDone, draftJsConfig, updateEditorState } = this.props;
 
         if (isDone) {
             return;
         }
 
         this.setState({ isShow: true });
+
+
+       if (draftJsConfig) {
+          const config = convertFromRaw(draftJsConfig);
+          let ed = EditorState.createWithContent(config);
+
+          updateEditorState(ed);
+       }
     };
 
     onBlur = (data: boolean): void => {
@@ -85,7 +97,7 @@ class Task extends React.Component<ITaskComponent> {
 
     render() {
         const { isShow } = this.state;
-        const { description, index, id, isDone } = this.props;
+        const { description, index, id, isDone, header, draftJsConfig } = this.props;
 
        return (
             <React.Fragment>
@@ -96,7 +108,9 @@ class Task extends React.Component<ITaskComponent> {
                        textAreaClassName={"modal__textarea modal__textarea_view"}
                        header={"Просмотр задачи"}
                        description={"Описание задачи: "}
+                       taskHeader={header}
                        changeTask={this.changeTask}
+                       draftJsConfig={draftJsConfig}
                        buttonLabel={"Изменить"}
                        onBlur={this.onBlur}
                        value={description}
@@ -105,7 +119,10 @@ class Task extends React.Component<ITaskComponent> {
                     : null }
                    <div onClick={this.showModal} className={this.classNames.task}>
                        <div className={this.classNames.position}>{index + 1}</div>
-                       <div className={this.classNames.description}>{description}</div>
+                       <div className={"task__info"}>
+                           <div className="task__header">{header}</div>
+                           <div className={this.classNames.description}>{description}</div>
+                       </div>
                        <div className={"task__done"}>
                        <input
                            title="Пометить выполненным"
@@ -118,11 +135,20 @@ class Task extends React.Component<ITaskComponent> {
                            id="checkbox-1"
                        />
                        </div>
-                       <i onClick={(event) => { this.delete(); event.stopPropagation()}} className="task__delete demo-icon icon-cancel">&#xe800;</i>
+                       <i onClick={(event) => { this.delete(); event.stopPropagation()}} className="task__delete">✕</i>
                    </div>
             </React.Fragment>
        );
     }
 }
 
-export default Task;
+const mapStateToProps = (state: any) => ({
+    editorState: state.app.editorState
+});
+
+const mapDispatchToProps = (dispatch: any) => ({
+    saveToDraftJs: (config: any) => dispatch(saveToDraftJs(config)),
+    updateEditorState: (config: any) => dispatch(updateEditorState(config))
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(Task);

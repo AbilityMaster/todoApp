@@ -1,7 +1,7 @@
 import * as React from 'react';
 import './textarea.scss';
 import { useEffect, useRef, useImperativeHandle, forwardRef } from "react";
-import {ITextArea} from "../../interfaces/interfaces";
+import {ITextArea} from "../../types/interfaces";
 
 function TextArea( { className, value, type } : ITextArea, ref: any) {
     const $textarea = useRef<HTMLTextAreaElement>(null);

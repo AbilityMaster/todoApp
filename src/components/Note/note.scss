@@ -1,9 +1,7 @@
 .note {
   width: 550px;
-  background: #e0e1e2;
-  border-radius: 5px;
+  background: linear-gradient(90deg, #a2a2a2a6, transparent);
   padding: 10px;
-  margin: 10px auto;
 
   &__header {
     font-weight: 600;

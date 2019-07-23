@@ -15,10 +15,16 @@ import {
     initPost,
     updateEditorState,
     openContextMenu,
-    selectDayMemory, hideContextMenu, updateCurrentMonth
+    selectDayMemory,
+    hideContextMenu,
+    updateCurrentMonth,
+    saveToDraftJs,
+    saveTasks,
+    updateNumberOfMonths, updateRangeSelected
 } from "../actions";
 import {handleActions} from "redux-actions";
 import { EditorState } from 'draft-js';
+import {TYPE_CALENDAR} from "../constants";
 
 const initialState = {
     config: [],
@@ -34,11 +40,18 @@ const initialState = {
     x: '',
     y: '',
     tempSelectedDay: new Date(),
-    currentMonth: ''
+    currentMonth: '',
+    configDraftJs: {},
+    numberOfMonths: 1,
+    rangeSelected: {
+        from: null,
+        to: null,
+        enteredTo: null
+    },
+    type: TYPE_CALENDAR.DEFAULT
 };
 
 Object.freeze(initialState);
-
 
 // @ts-ignore
 export default handleActions(
@@ -189,6 +202,41 @@ export default handleActions(
             return {
                 ...state,
                 currentMonth: action.payload
+            }
+        },
+        // @ts-ignore
+        [saveToDraftJs]: (state, action) => {
+            console.log(action.type);
+            return {
+                ...state,
+                configDraftJs: action.payload
+            }
+        },
+        // @ts-ignore
+        [saveTasks]: (state, action) => {
+            console.log(action.type);
+            return {
+                ...state,
+                tasks: action.payload
+            }
+        },
+        // @ts-ignore
+        [updateNumberOfMonths]: (state, action) => {
+            console.log(action.type);
+            const { numberOfMonths, type } = action.payload;
+
+            return {
+                ...state,
+                numberOfMonths: numberOfMonths,
+                type: type
+            }
+        },
+        // @ts-ignore
+        [updateRangeSelected]: (state, action) => {
+            console.log(action.type);
+            return {
+                ...state,
+                rangeSelected: action.payload
             }
         },
     },

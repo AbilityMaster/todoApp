@@ -8762,10 +8762,9 @@ react-calendar@^2.19.0:
     prop-types "^15.6.0"
     react-lifecycles-compat "^3.0.4"
 
-react-day-picker@^7.3.0:
+"react-day-picker@git+https://github.com/AbilityMaster/react-day-picker.git":
   version "7.3.0"
-  resolved "https://registry.yarnpkg.com/react-day-picker/-/react-day-picker-7.3.0.tgz#59b6d4e19d274650c79dcf49fbcce2637313467d"
-  integrity sha512-t2kz0Zy4P5U4qwU5YhsBq2QGmypP8L/u+89TSnuD0h4dYKSEDQArFPWfin9gv8erV1ciR1Wzr485TMaYnI7FTw==
+  resolved "git+https://github.com/AbilityMaster/react-day-picker.git#8cedbbcf684f1a14f958b04f6fd52613b41a38e8"
   dependencies:
     prop-types "^15.6.2"
 

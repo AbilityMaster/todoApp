@@ -1,2 +1,8 @@
 
-.icon-cancel:before { content: '\e800'; } /* '' */
+.icon-calendar:before { content: '\e800'; } /* '' */
+.icon-spin4:before { content: '\e834'; } /* '' */
+.icon-calendar-empty:before { content: '\f133'; } /* '' */
+.icon-calendar-plus-o:before { content: '\f271'; } /* '' */
+.icon-calendar-minus-o:before { content: '\f272'; } /* '' */
+.icon-calendar-times-o:before { content: '\f273'; } /* '' */
+.icon-calendar-check-o:before { content: '\f274'; } /* '' */

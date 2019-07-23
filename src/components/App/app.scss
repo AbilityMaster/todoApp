@@ -1,7 +1,7 @@
 .task-container {
-  max-height: 300px;
+//  max-height: 483px;
   overflow-y: auto;
-  width: 700px;
+ // width: 700px;
   margin: 0 auto;
 
   &__header {
@@ -22,24 +22,46 @@
   font-weight: 600;
 }
 
+.settings-btn {
+  position: absolute;
+  right: -28px;
+  font-size: 24px;
+  color: #d1d1d2;
+
+  &:hover {
+    cursor: pointer;
+    color: #969696;
+  }
+}
+.main-container {
+  position: absolute;
+  left: 240px;
+  right: 0;
+  bottom: 0;
+  top: 0;
+  padding: 0 15px;
+  background: #f1f1f1;
+}
+
+.button-add {
+  margin-left: 15px;
+  background-color: #4CAF50;
+  border: none;
+  color: white;
+  padding: 6px 24px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 13px;
+
+  &:hover {
+    cursor: pointer;
+    background: #529455;
+  }
+}
+
 .container {
   display: flex;
-  flex-direction: column;
   align-items: center;
-}
-
-.center {
-  display: inline-block;
-  font-size: 1rem;
-  border: 10px solid #e0e1e2;
-  border-radius: 5px;
-  margin: 0 auto;
-}
-
-.DayPicker-wrapper:focus, .DayPicker-Day:focus {
-  outline: none;
-}
-
-.DayPicker-Day {
-  border-radius: 0!important;
+  justify-content: flex-start;
 }

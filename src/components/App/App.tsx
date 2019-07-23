@@ -1,11 +1,9 @@
 import * as React from 'react';
-import DayPicker, {DayModifiers} from 'react-day-picker';
 import nanoid from "nanoid";
 import { connect } from "react-redux";
 
 import ModalWindow from "../ModalWindow";
 import Task from "../Task";
-import Button from "../Button";
 import Note from "../Note";
 import Loader from "../Loader";
 
@@ -13,10 +11,9 @@ import {
     deepclone,
     getFormatDate,
     transformDate,
-    transformDateArray,
     transformId
 } from "../../utils/utils";
-import {MODAL_TYPE, MONTHS, WEEKDAYS_LONG, WEEKDAYS_SHORT} from "../../constants";
+import {MODAL_TYPE} from "../../constants";
 import {
     addTask,
     deleteTask,
@@ -24,14 +21,15 @@ import {
     makeDoneTask,
     changeTask,
     openModalForAdd,
-    selectDay,
-    setId,
-    initLoad, initPost, openContextMenu, selectDayMemory, hideContextMenu, updateCurrentMonth
+    initLoad, openContextMenu, hideContextMenu, saveTasks
 } from "../../actions";
 import "./app.scss";
 import "react-day-picker/lib/style.css";
-import {IProps, ITask} from "../../interfaces/interfaces";
+import {IProps, ITask} from "../../types/interfaces";
 import ContextMenu from "../ContextMenu";
+import LeftBar from "../LeftBar";
+import Calendar from "../Calendar";
+import LabelDate from "../common/LabelDate";
 
 interface AppState {
     forScroll: number;
@@ -66,27 +64,43 @@ class App extends React.Component<IProps> {
     };
 
     componentDidMount(): void {
-        const { initLoad } = this.props;
+        const { initLoad, selectedDay } = this.props;
+
+        const id = transformDate(selectedDay);
 
         document.addEventListener('click', this.handleClickOut);
-        initLoad();
+
+        initLoad(id);
     }
 
     makeDoneTask = (id: string, checked: boolean): void => {
-        const { config, currentId, makeDoneTask } = this.props;
+        const { config, currentId, makeDoneTask, selectedDay, saveTasks } = this.props;
 
         const _config = deepclone(config);
-        const task = _config.find((value: any) => (value.id === id));
+        const idDay = transformDate(selectedDay);
+        // eslint-disable-next-line array-callback-return
+        const tasks = _config.filter((value: any) => {
+                if (value.idDay === idDay) {
+                    return value;
+                }
+        });
+
+        const task = tasks.find((value: any) => (value.id === id));
 
         if (task) {
             task.isDone = checked;
         }
 
         makeDoneTask( { config: _config, currentId, id, checked });
+        saveTasks(tasks);
     };
 
-    addTask = (data: string): void => {
-      const { config, currentId, listSelectedDays, addTask } = this.props;
+    addTask = (data: string, header: string, draftJsConfig: any): void => {
+      const { config, currentId, listSelectedDays, addTask, saveTasks } = this.props;
+
+      //console.warn(convertToRaw(editorState.getCurrentContent()));
+
+
       const _config: ITask [] = deepclone(config);
 
       if (data === '') {
@@ -96,8 +110,10 @@ class App extends React.Component<IProps> {
       _config.push({
           idDay: currentId,
           id: nanoid(7),
+          header: header,
           description: data,
-          isDone: false
+          isDone: false,
+          draftJsConfig: draftJsConfig
       });
 
       const tasks = _config.filter(value => (value.idDay === currentId));
@@ -108,6 +124,7 @@ class App extends React.Component<IProps> {
 
       this.setState({ forScroll: tasks.length });
       addTask({config: _config, isShowModal: false, listSelectedDays});
+      saveTasks(tasks);
     };
 
     componentDidUpdate(prevProps: Readonly<IProps>, prevState: Readonly<{}>, snapshot?: any): void {
@@ -131,6 +148,7 @@ class App extends React.Component<IProps> {
             return true;
         }
 
+        // eslint-disable-next-line array-callback-return
         const tasks = config.filter((value) => {
             if (value.idDay === currentId) {
                 return value;
@@ -143,18 +161,6 @@ class App extends React.Component<IProps> {
 
         return (tasks.length === 0);
     }
-
-    handleDayClick = (day : Date) => {
-        const { currentId, setId, selectDay } = this.props;
-
-        const id = transformDate(day);
-
-        if (id !== currentId) {
-            setId(id);
-        }
-
-        selectDay(day);
-    };
 
     changeTask = (id: string, data: string): void => {
         if (data === '') {
@@ -170,12 +176,13 @@ class App extends React.Component<IProps> {
     };
 
     deleteTask = (id: string) => {
-        const { currentId, config, listSelectedDays, deleteTask } = this.props;
+        const { currentId, config, listSelectedDays, deleteTask, saveTasks } = this.props;
         const _config = deepclone(config);
 
         const indexDel = _config.findIndex((value: any) => (value.id === id));
         _config.splice(indexDel, 1);
 
+        // eslint-disable-next-line array-callback-return
         const tasks = _config.filter((value: any) => {
             if (value.idDay === currentId) {
                 return value;
@@ -193,6 +200,7 @@ class App extends React.Component<IProps> {
             currentId,
             id
         });
+        saveTasks(tasks);
     };
 
     scrollToBottom = () => {
@@ -202,150 +210,61 @@ class App extends React.Component<IProps> {
     };
 
     renderTasks() {
-        const { config, currentId } = this.props;
+        const { tasks } = this.props;
 
-        const tasks = config.filter( value => {
-            if (value.idDay === currentId) {
-                return value;
-            }
-        });
+        // const tasks = config.filter( value => {
+        //     if (value.idDay === currentId) {
+        //         return value;
+        //     }
+        // });
 
         if (!tasks) {
             return null;
         }
 
-        return tasks.map((value, index) => {
+        return tasks.map((value: any, index: any) => {
             return (
                 <Task
                     key={value.id}
                     id={value.id}
                     index={index}
+                    header={value.header}
                     description={value.description}
                     deleteTask={this.deleteTask}
                     changeTask={this.changeTask}
                     makeDoneTask={this.makeDoneTask}
+                    draftJsConfig={value.draftJsConfig || {}}
                     isDone={value.isDone}
                 />
             );
         })
     }
 
-    get modifiers() {
-        const { config, currentMonth } = this.props;
-        let { listSelectedDays } = this.props;
-
-        if (currentMonth) {
-            listSelectedDays =  listSelectedDays.filter(value => {
-                if (value.getMonth() === currentMonth.getMonth()) {
-
-                    return value;
-                }
-            });
-        }
-
-        const dates = transformDateArray(listSelectedDays);
-        let tasksPerDay = [];
-        const doneAllTasks = [];
-        const doneNotAllTasks = [];
-
-        for (let i = 0; i < dates.length; i++) {
-            let counter = 0;
-            tasksPerDay = config.filter(value => (value.idDay === dates[i]));
-
-            for (let i = 0; i < tasksPerDay.length; i++) {
-                if (tasksPerDay[i].isDone) {
-                    counter++;
-                }
-            }
-
-            if (tasksPerDay.length === counter) {
-                doneAllTasks.push(transformId(dates[i]));
-            } else {
-                doneNotAllTasks.push(transformId(dates[i]));
-            }
-        }
-
-        return {
-            highlighted: doneNotAllTasks,
-            done: doneAllTasks
-        };
-    }
-
-    static get calcSelectedStyles() {
-        return ` .DayPicker-Day--highlighted {
-                    background-color: #df5e30;
-                    color: white;
-                    position: relative;
-                    border-radius: 0!important;
-                 }
-                 
-                 .DayPicker-Day--highlighted:hover {
-                       background: #a2340d!important;
-                 }
-               
-                 .DayPicker-Day--done{
-                    background-color: #348c1e;
-                    color: white;
-                    position: relative;
-                    border-radius: 0!important;
-                 }
-                 
-                 .DayPicker-Day--done:hover {
-                 background:   #386f2a!important;
-                 }
-             `;
-    }
-
-    handleContextMenuDayClick = (day: Date, modifiers: DayModifiers, e: React.MouseEvent<HTMLDivElement>) => {
-        const { openContextMenu, selectDayMemory } = this.props;
-
-        e.preventDefault();
-        openContextMenu({ x: `${e.clientX}px`, y: `${e.clientY}px` });
-        selectDayMemory(day);
-    };
-
-    handleMonthChange = (day: Date) => {
-        this.props.updateCurrentMonth(day);
-    };
-
     render() {
-        const { selectedDay, isShowModal, isShowLoader, isShowContextMenu, x, y } = this.props;
+        const { selectedDay, isShowModal, isShowLoader, isShowContextMenu, x, y, tasks } = this.props;
 
         return (
             <React.Fragment>
+                <LeftBar/>
                 { isShowContextMenu ? <ContextMenu openModal={this.openModal}  x={x} y={y} /> : null }
                 { isShowLoader ? <Loader /> : null}
-                <div style={isShowLoader ? {filter: 'blur(6px)'} : {}}>
-                <div className="app-name" onContextMenu={(event: any) => console.warn(event.keyCode)}>ToDo App</div>
+                <div className="main-container" style={isShowLoader ? {filter: 'blur(6px)'} : {display: 'block'}}>
                 <div className={"container"}>
-                    <style>{App.calcSelectedStyles}</style>
-                    <DayPicker
-                        months={MONTHS}
-                        weekdaysLong={WEEKDAYS_LONG}
-                        weekdaysShort={WEEKDAYS_SHORT}
-                        className={"center"}
-                        onMonthChange={this.handleMonthChange}
-                        onDayClick={this.handleDayClick}
-                        onContextMenu={this.handleContextMenuDayClick}
-                        modifiers={this.modifiers}
-                        // initialMonth={new Date(2017, 3)}
-                        selectedDays={
-                            [
-                                selectedDay,
-                            ]
-                        }
-                    />
-                    <Button onClick={this.openModal} content={"Добавить задачу"} />
+                    <LabelDate />
+                    <div onClick={this.openModal} className={"button-add"}>Добавить +</div>
                 </div>
-                { (this.isEmptyDay()) ? <Note
+                <Calendar />
+                {/*<Button onClick={this.openModal} content={"Добавить задачу"} />*/}
+                { (tasks.length === 0) ? <Note
                     header='Нет задач'
                     content='В выбранный день нет задач'
                 /> : null }
-                { (!this.isEmptyDay()) ? <div className={"task-container__header"}
-                >Задачи на {selectedDay ? getFormatDate(selectedDay) : null }</div> : null }
+                {/*{ (!this.isEmptyDay()) ? <div className={"task-container__header"}*/}
+                {/*>Задачи на {selectedDay ? getFormatDate(selectedDay) : null }</div> : null }*/}
                 <div ref={this.$taskContainer} className={"task-container"}>
                     {this.renderTasks()}
                 </div>
+
                 { isShowModal ?
                     <ModalWindow
                         type={MODAL_TYPE.ADD}
@@ -372,6 +291,7 @@ const mapStateToProps = (state: any) => ({
    listSelectedDays: state.app.listSelectedDays,
    isShowLoader: state.app.isShowLoader,
    isShowContextMenu: state.app.isShowContextMenu,
+   editorState: state.app.editorState,
    x: state.app.x,
    y: state.app.y,
    currentMonth: state.app.currentMonth
@@ -380,18 +300,14 @@ const mapStateToProps = (state: any) => ({
 const mapDispatchToProps = (dispatch: any) => ({
     openModalForAdd: () => dispatch(openModalForAdd()),
     hideModalForAdd: () => dispatch(hideModalForAdd()),
-    selectDay: (data: object) => dispatch(selectDay(data)),
-    selectDayMemory: (data: Date) => dispatch(selectDayMemory(data)),
     deleteTask: (data: object) => dispatch(deleteTask(data)),
     changeTask: (data: object) => dispatch(changeTask(data)),
     makeDoneTask: (data: any) => dispatch(makeDoneTask(data)),
     addTask: (data: object) => dispatch(addTask(data)),
-    setId: (id: string) => dispatch(setId(id)),
-    initLoad: () => dispatch(initLoad()),
-    initPost: (config: object) => dispatch(initPost(config)),
+    initLoad: (id: string) => dispatch(initLoad(id)),
     openContextMenu: (data: object) => dispatch(openContextMenu(data)),
     hideContextMenu: () => dispatch(hideContextMenu()),
-    updateCurrentMonth: (data: Date) => dispatch(updateCurrentMonth(data))
+    saveTasks: (data: any) => dispatch(saveTasks(data))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(App);

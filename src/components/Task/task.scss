@@ -6,6 +6,7 @@
   background-color: #f1f1f1;
   transition: all linear 0.1s;
   cursor: pointer;
+
   &:before {
     content: 'Завершено';
     position: absolute;
@@ -16,6 +17,7 @@
   }
 
   &_active {
+
     &:hover {
       background: linear-gradient(to top left, powderblue, pink);
       transition: all linear 0.1s;
@@ -32,6 +34,7 @@
     cursor: pointer;
     font-size: 22px;
     color: #d03030;
+    font-style: normal;
 
     &:before {
       display: inline-block;
@@ -79,9 +82,16 @@
     }
   }
 
-  &__description {
+  &__info {
     margin-left: 50px;
     margin-right: 30px;
+  }
+
+  &__header {
+    font-weight: 600;
+  }
+
+  &__description {
 
     &_done {
       text-decoration: line-through;

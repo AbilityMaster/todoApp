@@ -1,0 +1,77 @@
+.DayPicker-wrapper:focus, .DayPicker-Day:focus {
+  outline: none;
+}
+
+.DayPicker-Day {
+  border-radius: 0!important;
+}
+
+.container {
+  display: flex;
+
+  &__calendar {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+  }
+}
+
+.label-button {
+  cursor: pointer;
+  display: inline-block;
+  padding: 5px 0;
+  font-size: 12px;
+  color: rgba(0,0,0,0.5);
+
+  &:hover {
+    color: rgba(0,0,0,0.7)
+  }
+}
+
+.add-button {
+  position: absolute;
+}
+
+.custom-theme {
+  display: inline-block;
+  font-size: 1rem;
+  border: 1px solid #e0e1e2;
+  background: #fff;
+  margin-bottom: 15px;
+  margin-right: 20px;
+}
+
+.DayPicker-Day--highlighted {
+  background-color: #ca040d;
+  color: white;
+  position: relative;
+  border-radius: 0!important;
+}
+
+.DayPicker-Day--highlighted:hover {
+  background: #a2340d!important;
+}
+
+.DayPicker-Day--done{
+  background-color: #0c7b29;
+  color: white;
+  position: relative;
+  border-radius: 0!important;
+}
+
+.DayPicker-Day--done:hover {
+  background:   #386f2a!important;
+}
+
+.Range .DayPicker-Day--selected:not(.DayPicker-Day--start):not(.DayPicker-Day--end):not(.DayPicker-Day--outside) {
+  background-color: #f1821157 !important;
+  color: #000;
+}
+
+.DayPicker-Day--selected:not(.DayPicker-Day--disabled):not(.DayPicker-Day--outside) {
+  background-color: #dc7911;
+}
+
+.Range .DayPicker-Day {
+  border-radius: 0 !important;
+}

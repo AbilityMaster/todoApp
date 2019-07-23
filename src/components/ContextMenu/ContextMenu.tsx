@@ -1,6 +1,6 @@
 import * as React from 'react';
 import './contextMenu.scss';
-import {IContextMenu, ITask} from "../../interfaces/interfaces";
+import {IContextMenu, ITask} from "../../types/interfaces";
 import {transformDate} from "../../utils/utils";
 import {connect} from "react-redux";
 import {fetchConfig, hideContextMenu, selectDay, setId} from "../../actions";
