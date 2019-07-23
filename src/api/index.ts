@@ -41,13 +41,13 @@ export default class Api {
         }).catch(err => console.log(err));
     }
 
-    change(idTask: string, data: string) {
+    change(idTask: string, header: string, description: string, draftJsConfig: object) {
         fetch('/api/todo/modify', {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ idTask, data })
+            body: JSON.stringify({ idTask, header, description, draftJsConfig })
         }).then(function(response) {
             return response.json();
         });

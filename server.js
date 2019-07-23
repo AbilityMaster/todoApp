@@ -48,10 +48,14 @@ app.put("/api/todo/modify", jsonParser, function (req, res) {
     const fileData = fs.readFileSync("config.json", "utf8");
     const config = JSON.parse(fileData);
     const idTask = req.body.idTask;
-    const content = req.body.data;
+    const header = req.body.header;
+    const description = req.body.description;
+    const draftJsConfig = req.body.draftJsConfig;
 
     const task = config.find( value => (value.id === idTask));
-    task.description = content;
+    task.header = header;
+    task.description = description;
+    task.draftJsConfig = draftJsConfig;
 
     const data = JSON.stringify(config);
 

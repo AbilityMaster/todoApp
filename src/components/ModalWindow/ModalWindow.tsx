@@ -3,31 +3,30 @@ import ReactDOM from 'react-dom';
 import './modalWindow.scss';
 import Button from "../Button";
 import {MODAL_TYPE} from "../../constants";
-import {hideContextMenu, updateEditorState} from "../../actions";
+import {hideContextMenu, hideModal, updateEditorState} from "../../actions";
 import {connect} from "react-redux";
 import {IModalWindow} from "../../types/interfaces";
 import "./Draft.css";
 import FunctionalEditor from "../FunctionalEditor";
 import {convertToRaw} from "draft-js";
 
-interface State {
-    isShowTextarea: boolean;
-}
+const settings = {
+    [MODAL_TYPE.ADD]: {
+        name: "Добавить задачу",
+        buttonLabel: "Добавить",
+        labelForDescription: "Добавьте описание: "
+    },
+    [MODAL_TYPE.CHANGE]: {
+        name: "Просмотр задачи",
+        buttonLabel: "Изменить",
+        labelForDescription: "Описание задачи: "
+    }
+};
 
 class ModalWindow extends React.Component<IModalWindow> {
-    state: State= {
-        isShowTextarea: true
-    };
-
     el: any = document.querySelector('#root');
     $textarea: any = React.createRef();
     $inputHeader: any = React.createRef();
-
-    enterPressed = (event: KeyboardEvent) => {
-        if (event.key === 'Enter') {
-            this.onClick();
-        }
-    };
 
     componentDidMount(): void {
         const { type } = this.props;
@@ -35,30 +34,21 @@ class ModalWindow extends React.Component<IModalWindow> {
         if (type === MODAL_TYPE.ADD) {
       //      this.$textarea.current.focus();
         }
-
-        document.addEventListener('keypress', this.enterPressed);
     }
 
-    componentWillUnmount(): void {
-        document.removeEventListener('keypress', this.enterPressed);
-    }
-
-    onBlur = () => {
-        const { onBlur } = this.props;
-
-        if (onBlur) {
-            onBlur(false);
-        }
-    };
-
-    onClick = () => {
-        const { addTask, changeTask, type, id, isShowContextMenu, hideContextMenu, editorState } = this.props;
+    handleClick = () => {
+        const { addTask, changeTask, type, id, isShowContextMenu, hideContextMenu, editorState, hideModal } = this.props;
 
         const draftJsConfig = convertToRaw(editorState.getCurrentContent());
         const taskDescription = draftJsConfig.blocks[0].text || '';
 
+        hideModal();
+
         if ((type === MODAL_TYPE.CHANGE) && changeTask && id) {
-           changeTask(id, this.$textarea.current.value())
+           console.log(id, taskDescription, draftJsConfig);
+           changeTask(id, this.$inputHeader.current.value, taskDescription, draftJsConfig);
+
+           return;
         }
 
         if (addTask) {
@@ -71,24 +61,26 @@ class ModalWindow extends React.Component<IModalWindow> {
     };
 
     renderLayer() {
-        return ReactDOM.createPortal(<div onClick={this.onBlur} className={"layer"} />, this.el);
+        const { hideModal } = this.props;
+
+        return ReactDOM.createPortal(<div onClick={hideModal} className={"layer"} />, this.el);
     }
 
     render() {
-        const { header, description, taskHeader, className, buttonLabel, draftJsConfig } = this.props;
+        const { header, description, taskHeader, className, buttonLabel, draftJsConfig, type } = this.props;
 
+        console.log(header);
         return (
             <React.Fragment>
                 {this.renderLayer()}
                 <div className={"modal__wrapper"}>
                     <div className={className}>
-                            <h2>{header}</h2>
+                            <h2>{settings[type].name}</h2>
                             <p>Заголовок задачи:</p>
-                            <input ref={this.$inputHeader} value={taskHeader} className="modal__input" type={"text"} />
-                            <p>{description}</p>
+                            <input ref={this.$inputHeader} defaultValue={header} className="modal__input" type={"text"} />
+                            <p>{settings[type].labelForDescription}</p>
                             <FunctionalEditor draftJsConfig={draftJsConfig} />
-                            {/*<TextArea type={type} value={value} ref={this.$textarea} className={textAreaClassName} />*/}
-                            <Button type={"form-apply"} onClick={this.onClick} content={ buttonLabel ? buttonLabel : "Добавить"} />
+                            <Button type={"form-apply"} onClick={this.handleClick} content={ settings[type].buttonLabel} />
                     </div>
                 </div>
             </React.Fragment>
@@ -98,13 +90,18 @@ class ModalWindow extends React.Component<IModalWindow> {
 
 const mapDispatchToProps = (dispatch: any) => ({
     updateEditorState: (data: any) => dispatch(updateEditorState(data)),
-    hideContextMenu: () => dispatch(hideContextMenu())
+    hideContextMenu: () => dispatch(hideContextMenu()),
+    hideModal: () => dispatch(hideModal())
 });
 
 const mapStateToProps = (state: any) => ({
     editorState: state.app.editorState,
     isShowContextMenu: state.app.isShowContextMenu,
-    configDraftJs: state.app.configDraftJs
+    configDraftJs: state.app.configDraftJs,
+    type: state.modalWindow.type,
+    header: state.task.header,
+    draftJsConfig: state.task.draftJsConfig,
+    id: state.task.id
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(ModalWindow);

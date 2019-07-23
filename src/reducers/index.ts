@@ -1,8 +1,12 @@
 import app from './app';
+import modalWindow from './modalWindow';
+import task from "./task";
 import {combineReducers} from "redux";
 
 const reducers = {
-    app
+    app,
+    modalWindow,
+    task
 };
 
 export default () => combineReducers({ ...reducers });

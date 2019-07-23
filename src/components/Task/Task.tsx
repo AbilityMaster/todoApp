@@ -4,18 +4,13 @@ import ModalWindow from "../ModalWindow";
 import {MODAL_TYPE} from "../../constants";
 import {ITaskComponent} from "../../types/interfaces";
 import {convertFromRaw} from "draft-js";
-import { saveToDraftJs, updateEditorState} from "../../actions";
+import {saveToDraftJs, showModal, updateEditorState} from "../../actions";
 import {connect} from 'react-redux';
 import { EditorState } from "draft-js";
-
-interface Istate {
-    isShow: boolean;
-}
+import {changeTypeModal} from "../../actions/modalWindow";
+import {selectTask} from "../../actions/task";
 
 class Task extends React.Component<ITaskComponent> {
-    state: Istate = {
-        isShow: false
-    };
 
     $doneInput = React.createRef<HTMLInputElement>();
 
@@ -54,14 +49,11 @@ class Task extends React.Component<ITaskComponent> {
     };
 
     showModal = () => {
-        const { isDone, draftJsConfig, updateEditorState } = this.props;
+        const { isDone, header, id, description, draftJsConfig, updateEditorState, changeTypeModal, showModal, selectTask } = this.props;
 
         if (isDone) {
             return;
         }
-
-        this.setState({ isShow: true });
-
 
        if (draftJsConfig) {
           const config = convertFromRaw(draftJsConfig);
@@ -69,18 +61,18 @@ class Task extends React.Component<ITaskComponent> {
 
           updateEditorState(ed);
        }
+
+       showModal();
+
+       if (selectTask) {
+           selectTask({ header, description, draftJsConfig, id });
+       }
+
+       changeTypeModal(MODAL_TYPE.CHANGE);
     };
 
     onBlur = (data: boolean): void => {
         this.setState({ isShow: data });
-    };
-
-    changeTask = (id: string, data: string): void => {
-        const { changeTask } = this.props;
-
-        changeTask(id, data);
-
-        this.setState({ isShow: false })
     };
 
     handleChange = () => {
@@ -96,27 +88,10 @@ class Task extends React.Component<ITaskComponent> {
     };
 
     render() {
-        const { isShow } = this.state;
         const { description, index, id, isDone, header, draftJsConfig } = this.props;
 
        return (
             <React.Fragment>
-               { isShow ?
-                   <ModalWindow
-                       type={MODAL_TYPE.CHANGE}
-                       className="modal"
-                       textAreaClassName={"modal__textarea modal__textarea_view"}
-                       header={"Просмотр задачи"}
-                       description={"Описание задачи: "}
-                       taskHeader={header}
-                       changeTask={this.changeTask}
-                       draftJsConfig={draftJsConfig}
-                       buttonLabel={"Изменить"}
-                       onBlur={this.onBlur}
-                       value={description}
-                       id={id}
-                    />
-                    : null }
                    <div onClick={this.showModal} className={this.classNames.task}>
                        <div className={this.classNames.position}>{index + 1}</div>
                        <div className={"task__info"}>
@@ -143,12 +118,15 @@ class Task extends React.Component<ITaskComponent> {
 }
 
 const mapStateToProps = (state: any) => ({
-    editorState: state.app.editorState
+    editorState: state.app.editorState,
 });
 
 const mapDispatchToProps = (dispatch: any) => ({
     saveToDraftJs: (config: any) => dispatch(saveToDraftJs(config)),
-    updateEditorState: (config: any) => dispatch(updateEditorState(config))
+    updateEditorState: (config: any) => dispatch(updateEditorState(config)),
+    changeTypeModal: (data: string) => dispatch(changeTypeModal(data)),
+    showModal: () => dispatch(showModal()),
+    selectTask: (data: object) => dispatch(selectTask(data))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Task);

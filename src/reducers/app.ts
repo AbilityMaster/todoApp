@@ -1,8 +1,6 @@
 import {transformDate} from "../utils/utils";
 import {
-    hideModalForAdd,
     makeDoneTask,
-    openModalForAdd,
     addTask,
     setId,
     selectDay,
@@ -20,7 +18,7 @@ import {
     updateCurrentMonth,
     saveToDraftJs,
     saveTasks,
-    updateNumberOfMonths, updateRangeSelected
+    updateNumberOfMonths, updateRangeSelected, hideModal, showModal
 } from "../actions";
 import {handleActions} from "redux-actions";
 import { EditorState } from 'draft-js';
@@ -65,7 +63,7 @@ export default handleActions(
             }
         },
         // @ts-ignore
-        [openModalForAdd]: (state, action) => {
+        [showModal]: (state, action) => {
             console.log(action.type);
             return {
                 ...state,
@@ -73,7 +71,7 @@ export default handleActions(
             }
         },
         // @ts-ignore
-        [hideModalForAdd]: (state, action) => {
+        [hideModal]: (state, action) => {
             console.log(action.type);
             return {
                 ...state,

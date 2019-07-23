@@ -1,3 +1,6 @@
+import {changeTypeModal} from "../actions/modalWindow";
+import {showModal} from "../actions";
+
 export interface IProps {
     config: ITask [];
     x: string;
@@ -11,8 +14,8 @@ export interface IProps {
     editorState: any;
     selectedDay: Date;
     listSelectedDays: Date [];
-    openModalForAdd: () => void;
-    hideModalForAdd: () => void;
+    showModal: () => void;
+    hideModal: () => void;
     currentMonth: Date;
     makeDoneTask: (config: object) => void;
     addTask: (data: object) => void;
@@ -22,6 +25,7 @@ export interface IProps {
     openContextMenu: (data: object) => void;
     hideContextMenu: () => void;
     saveTasks: (data: any) => void;
+    changeTypeModal: (data: string) => void;
 }
 
 export interface ITask {
@@ -50,9 +54,11 @@ export interface ITaskComponent extends ITask{
     editorState: any;
     updateEditorState: (data: any) => void;
     deleteTask: (id: string) => void;
-    changeTask: (id: string, data: string) => void;
     makeDoneTask: (id: string, checked: boolean) => void;
     saveToDraftJs: (config: any) => void;
+    changeTypeModal: (data: string) => void;
+    showModal: () => void;
+    selectTask?: (data: object) => void;
 }
 
 export interface ITextArea {
@@ -81,15 +87,16 @@ export interface IModalWindow {
     header?: string;
     description?: string;
     value?: string;
-    type?: string;
+    type: string;
     className?: string;
     taskHeader?: string;
     textAreaClassName?: string;
     buttonLabel?: string;
     id?: string;
-    changeTask?: (id: string, data: string) => void;
+    changeTask?: (id: string, header: string, data: string, config: object) => void;
     editorState: any;
     updateEditorState: (data: any) => void;
     isShowContextMenu: boolean;
     hideContextMenu: () => void;
+    hideModal: () => void;
 }

@@ -17,8 +17,6 @@ const mapStateToProps = (state: any) => ({
     currentId: state.app.currentId,
     selectedDay: state.app.selectedDay,
     listSelectedDays: state.app.listSelectedDays,
-    x: state.app.x,
-    y: state.app.y,
     currentMonth: state.app.currentMonth,
     numberOfMonths: state.app.numberOfMonths,
     rangeSelected: state.app.rangeSelected,

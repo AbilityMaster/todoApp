@@ -6,7 +6,6 @@ import EditorBtns from "../common/InlineToolbar/InlineToolbar";
 
 import {updateEditorState} from "../../actions";
 import './functionalEditor.scss';
-import {useEffect} from "react";
 
 const mapStateToProps = (state: any) => ({
     editorState: state.app.editorState,
@@ -20,7 +19,6 @@ const mapDispatchToProps = (dispatch: any) => ({
 const FunctionalEditor = (props: any) => {
     let { editorState, draftJsConfig } = props;
 
-    console.log(editorState.toJS());
     const handleChange = (editorState: any) => {
         const { updateEditorState } = props;
 

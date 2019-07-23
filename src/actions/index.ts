@@ -5,8 +5,8 @@ const prefix = 'app/';
 export const selectDayMemory = createAction(prefix + 'SELECT_DAY_FROM_CONTEXT_MENU');
 export const openContextMenu = createAction(prefix + 'OPEN_CONTEXT_MENU');
 export const hideContextMenu = createAction(prefix + 'HIDE_CONTEXT_MENU');
-export const openModalForAdd = createAction(prefix + 'OPEN_MODAL_WINDOW_FOR_ADD');
-export const hideModalForAdd = createAction(prefix + 'HIDE_MODAL_WINDOW_FOR_ADD');
+export const showModal = createAction(prefix + 'SHOW_MODAL');
+export const hideModal = createAction(prefix + 'HIDE_MODAL');
 
 export const makeDoneTask = createAction(prefix + 'DO_STATUS_DONE_TASK');
 export const addTask = createAction(prefix + 'ADD_TASK');

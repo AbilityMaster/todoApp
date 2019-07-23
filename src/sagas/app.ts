@@ -71,8 +71,8 @@ function* deleteTaskSaga(apiApp, action) {
 function* changeTaskData(apiApp, action) {
     try {
         console.warn('[saga ===> CHANGE TASK ===> ]');
-        const { idTask, data } = action.payload;
-        yield apiApp.change(idTask, data);
+        const { idTask, data, task } = action.payload;
+        yield apiApp.change(idTask, task.header, task.description, task.draftJsConfig);
     } catch (e) {
         console.error('[saga ===> CHANGE TASK ===> error ]');
     }
