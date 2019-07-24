@@ -2,6 +2,8 @@ import { createAction } from 'redux-actions';
 
 const prefix = 'app/';
 
+export const saveGroupConfig = createAction(prefix + 'SAVE_GROUP_CONFIG_FOR_TASKS');
+export const saveQueryType = createAction(prefix + 'SAVE_QUERY_TYPE');
 export const selectDayMemory = createAction(prefix + 'SELECT_DAY_FROM_CONTEXT_MENU');
 export const openContextMenu = createAction(prefix + 'OPEN_CONTEXT_MENU');
 export const hideContextMenu = createAction(prefix + 'HIDE_CONTEXT_MENU');

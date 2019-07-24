@@ -1,6 +1,5 @@
 import * as React from 'react';
 import './task.scss';
-import ModalWindow from "../ModalWindow";
 import {MODAL_TYPE} from "../../constants";
 import {ITaskComponent} from "../../types/interfaces";
 import {convertFromRaw} from "draft-js";
@@ -56,6 +55,7 @@ class Task extends React.Component<ITaskComponent> {
         }
 
        if (draftJsConfig) {
+
           const config = convertFromRaw(draftJsConfig);
           let ed = EditorState.createWithContent(config);
 
@@ -88,7 +88,7 @@ class Task extends React.Component<ITaskComponent> {
     };
 
     render() {
-        const { description, index, id, isDone, header, draftJsConfig } = this.props;
+        const { description, index, isDone, header } = this.props;
 
        return (
             <React.Fragment>

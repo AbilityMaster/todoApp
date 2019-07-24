@@ -2,14 +2,21 @@ import * as React from 'react';
 import {connect} from "react-redux";
 import DayPicker, {DayModifiers, DateUtils} from "react-day-picker";
 
-import {MONTHS, TYPE_CALENDAR, WEEKDAYS_LONG, WEEKDAYS_SHORT} from "../../constants";
-import {transformDate, transformDateArray, transformId, getRangeFromDate} from "../../utils/utils";
+import {MONTHS, QUERY_TYPE, TYPE_CALENDAR, WEEKDAYS_LONG, WEEKDAYS_SHORT} from "../../constants";
 import {
-    openContextMenu, saveTasks,
+    transformDate,
+    transformDateArray,
+    transformId,
+    getRangeFromDate,
+    getInitialStateForRange
+} from "../../utils/utils";
+import {
+    openContextMenu, saveQueryType, saveTasks,
     selectDay,
     selectDayMemory, setId, updateCurrentMonth, updateRangeSelected
 } from "../../actions";
 import './Calendar.scss';
+import HelpBox from '../common/HelpBox';
 
 const mapStateToProps = (state: any) => ({
     tasks: state.app.tasks,
@@ -30,22 +37,14 @@ const mapDispatchToProps = (dispatch: any) => ({
     updateCurrentMonth: (data: Date) => dispatch(updateCurrentMonth(data)),
     openContextMenu: (data: object) => dispatch(openContextMenu(data)),
     saveTasks: (data: any) => dispatch(saveTasks(data)),
-    updateRangeSelected: (data: object) => dispatch(updateRangeSelected(data))
+    updateRangeSelected: (data: object) => dispatch(updateRangeSelected(data)),
+    saveQueryType: (data: string) => dispatch(saveQueryType(data))
 });
 
 const Calendar = (props: any) => {
     const { updateCurrentMonth, selectedDay, numberOfMonths, updateRangeSelected, rangeSelected, type } = props;
     const [ isShowCalendar, toggle ] = React.useState(true);
-
-    const getInitialState = (): {from: any, to: any, enteredTo: any} => {
-        return {
-            from: null,
-            to: null,
-            enteredTo: null
-        }
-    };
-
-    const [ selected, updateSelected ] = React.useState(getInitialState());
+    const [ isShowHelpBox, updateHelpBoxVisibility ] = React.useState(false);
 
     const isSelectingFirstDay = (from: Date | null, to: Date | null, day: Date | null) => {
         // @ts-ignore
@@ -61,11 +60,14 @@ const Calendar = (props: any) => {
     };
 
     const handleDayClick = (day : Date) => {
-        const { currentId, setId, selectDay, config, saveTasks, type } = props;
+        const { currentId, setId, selectDay, config, saveTasks, type, saveQueryType } = props;
+
+        saveQueryType('');
 
         if (type === TYPE_CALENDAR.DEFAULT) {
             const id = transformDate(day);
 
+            // eslint-disable-next-line array-callback-return
             const tasks = config.filter((value: any) => {
                 if (value.idDay === id) {
                     return value;
@@ -87,6 +89,7 @@ const Calendar = (props: any) => {
             const tasks: any = [];
 
             ids.forEach( item => {
+                // eslint-disable-next-line array-callback-return
                return config.filter((value: any) => {
                  if (value.idDay === item) {
                      tasks.push(value);
@@ -129,7 +132,7 @@ const Calendar = (props: any) => {
     };
 
     const handleResetClick = () => {
-        updateSelected(getInitialState());
+        updateRangeSelected(getInitialStateForRange());
     };
 
     const handleContextMenuDayClick = (day: Date, modifiers: DayModifiers, e: React.MouseEvent<HTMLDivElement>) => {
@@ -146,6 +149,7 @@ const Calendar = (props: any) => {
         const { from, enteredTo } = rangeSelected;
 
         if (currentMonth) {
+            // eslint-disable-next-line array-callback-return
             listSelectedDays =  listSelectedDays.filter((value: any) => {
                 if (value.getMonth() === currentMonth.getMonth()) {
 
@@ -184,7 +188,7 @@ const Calendar = (props: any) => {
         };
     };
 
-    const { from, to, enteredTo } = rangeSelected;
+    const { from, enteredTo } = rangeSelected;
     const selectedDays = [from, { from, to: enteredTo}];
 
     return (
@@ -194,27 +198,31 @@ const Calendar = (props: any) => {
                 {/*<div className={"add-button"}><span>+</span> Добавить</div>*/}
                 <div className={"container__calendar"}>
                     {/*<div className={"settings-btn"}>⚙</div>*/}
-                    { isShowCalendar ?
-                        <DayPicker
-                            numberOfMonths={numberOfMonths}
-                            fromMonth={from}
-                            months={MONTHS}
-                            weekdaysLong={WEEKDAYS_LONG}
-                            weekdaysShort={WEEKDAYS_SHORT}
-                            className={"Range"}
-                            onMonthChange={handleMonthChange}
-                            onDayClick={handleDayClick}
-                            onContextMenu={handleContextMenuDayClick}
-                            modifiers={getModifiers()}
-                            onDayMouseEnter={handleDayMouseEnter}
-                            // initialMonth={new Date(2017, 3)}
-                            selectedDays={
-                                (type === TYPE_CALENDAR.RANGE) ? selectedDays : [selectedDay]
+                    { isShowCalendar ? (
+                        <React.Fragment>
+                            <DayPicker
+                                numberOfMonths={numberOfMonths}
+                                fromMonth={from}
+                                months={MONTHS}
+                                weekdaysLong={WEEKDAYS_LONG}
+                                weekdaysShort={WEEKDAYS_SHORT}
+                                className={"Range custom-theme"}
+                                onMonthChange={handleMonthChange}
+                                onDayClick={handleDayClick}
+                                onContextMenu={handleContextMenuDayClick}
+                                modifiers={getModifiers()}
+                                onDayMouseEnter={handleDayMouseEnter}
+                                // initialMonth={new Date(2017, 3)}
+                                selectedDays={
+                                    (type === TYPE_CALENDAR.RANGE) ? selectedDays : [selectedDay]
 
-                            }
-                    /> : null
+                                }
+                            />
+                            <div onClick={() => updateHelpBoxVisibility(true)} className={"help"}>?</div>
+                            { isShowHelpBox ? <HelpBox close={updateHelpBoxVisibility} /> : null }
+                        </React.Fragment>
+                        ) : null
                     }
-
                 </div>
             </div>
         </React.Fragment>

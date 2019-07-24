@@ -40,3 +40,10 @@ export const TYPE_CALENDAR = {
     DEFAULT: 'DEFAULT',
     RANGE: 'RANGE'
 };
+
+export const QUERY_TYPE = {
+    TODAY: 'TODAY',
+    TOMMOROW: 'TOMMOROW',
+    NEXT_WEEK: 'NEXT_WEEK',
+    ALL: 'ALL'
+};

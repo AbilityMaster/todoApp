@@ -16,7 +16,7 @@ import {
     transformDate,
     transformId
 } from "../../utils/utils";
-import {MODAL_TYPE} from "../../constants";
+import {MODAL_TYPE, QUERY_TYPE} from "../../constants";
 import {
     addTask,
     deleteTask,
@@ -24,12 +24,13 @@ import {
     makeDoneTask,
     changeTask,
     showModal,
-    initLoad, openContextMenu, hideContextMenu, saveTasks
+    initLoad, openContextMenu, hideContextMenu, saveTasks, selectDay
 } from "../../actions";
 import "./app.scss";
 import "react-day-picker/lib/style.css";
 import {IProps, ITask} from "../../types/interfaces";
 import {changeTypeModal} from "../../actions/modalWindow";
+import TaskList from "../TaskList";
 
 interface AppState {
     forScroll: number;
@@ -50,7 +51,9 @@ const mapStateToProps = (state: any) => ({
     editorState: state.app.editorState,
     x: state.app.x,
     y: state.app.y,
-    currentMonth: state.app.currentMonth
+    currentMonth: state.app.currentMonth,
+    groupConfig: state.app.groupConfig,
+    queryType: state.app.queryType
 });
 
 const mapDispatchToProps = (dispatch: any) => ({
@@ -136,8 +139,12 @@ class App extends React.Component<IProps> {
         saveTasks(tasks);
     };
 
-    addTask = (data: string, header: string, draftJsConfig: any): void => {
+    addTask = (data: string, header: string, draftJsConfig: any, selectedDayByPopup?: Date): void => {
       const { config, currentId, listSelectedDays, addTask, saveTasks } = this.props;
+
+      if (selectedDayByPopup) {
+          selectDay(selectedDayByPopup);
+      }
 
       const _config: ITask [] = deepclone(config);
 
@@ -146,7 +153,7 @@ class App extends React.Component<IProps> {
       }
 
       _config.push({
-          idDay: currentId,
+          idDay: selectedDayByPopup ? transformDate(selectedDayByPopup) : currentId,
           id: nanoid(7),
           header: header,
           description: data,
@@ -157,7 +164,11 @@ class App extends React.Component<IProps> {
       const tasks = _config.filter(value => (value.idDay === currentId));
 
       if (!listSelectedDays.find( value => (transformDate(value) === currentId))) {
-          listSelectedDays.push(transformId(currentId));
+          if (selectedDayByPopup) {
+              listSelectedDays.push(selectedDayByPopup);
+          } else {
+              listSelectedDays.push(transformId(currentId));
+          }
       }
 
       this.setState({ forScroll: tasks.length });
@@ -166,7 +177,6 @@ class App extends React.Component<IProps> {
     };
 
     changeTask = (id: string, header: string, data: string, draftJsConfig: object): void => {
-        console.log(id, header, data);
         if (data === '') {
             return;
         }
@@ -176,6 +186,7 @@ class App extends React.Component<IProps> {
         const task = _config.find((value: any) => (value.id === id));
         const idDay = task.idDay || '';
 
+        // eslint-disable-next-line array-callback-return
         const tasks = _config.filter((value: any) => {
            if (value.idDay === idDay) {
                return value;
@@ -233,7 +244,7 @@ class App extends React.Component<IProps> {
             return null;
         }
 
-        return tasks.map((value: any, index: any) => {
+        return tasks.map((value: any, index: number) => {
             return (
                 <Task
                     key={value.id}
@@ -250,8 +261,26 @@ class App extends React.Component<IProps> {
         })
     }
 
+    renderTaskLists() {
+        const { groupConfig } = this.props;
+
+        if (Object.keys(groupConfig).length === 0) {
+            return null;
+        }
+
+        return groupConfig.map((value: any, index: number) => {
+           return (
+               <TaskList
+                   key={index}
+                   name={value.idDay}
+                   tasks={value.tasks}
+               />
+           )
+        });
+    }
+
     render() {
-        const { isShowModal, isShowLoader, isShowContextMenu, x, y, tasks } = this.props;
+        const { isShowModal, isShowLoader, isShowContextMenu, x, y, tasks, queryType } = this.props;
 
         return (
             <React.Fragment>
@@ -268,9 +297,12 @@ class App extends React.Component<IProps> {
                     header='Нет задач'
                     content='В выбранный день нет задач'
                 /> : null }
-                <div ref={this.$taskContainer} className={"task-container"}>
+                { queryType !== QUERY_TYPE.ALL ? <div ref={this.$taskContainer} className={"task-container"}>
                     {this.renderTasks()}
-                </div>
+                </div> : null }
+                { queryType === QUERY_TYPE.ALL ? <div ref={this.$taskContainer} className={"task-container"}>
+                    {this.renderTaskLists()}
+                </div> : null }
                 { isShowModal ?
                     <ModalWindow
                         className={"modal"}

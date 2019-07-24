@@ -1,14 +1,19 @@
 import * as React from 'react';
 import ReactDOM from 'react-dom';
-import './modalWindow.scss';
 import Button from "../Button";
-import {MODAL_TYPE} from "../../constants";
-import {hideContextMenu, hideModal, updateEditorState} from "../../actions";
 import {connect} from "react-redux";
+import {convertToRaw} from "draft-js";
+
+import FunctionalEditor from "../FunctionalEditor";
+import {getFormatDate} from "../../utils/utils";
+import CalendarPopup from "../common/CalendarPopup";
+import {saveCoords, showCalendar} from "../../actions/modalWindow";
+
+import {hideContextMenu, hideModal, selectDay, updateEditorState} from "../../actions";
+import {MODAL_TYPE} from "../../constants";
 import {IModalWindow} from "../../types/interfaces";
 import "./Draft.css";
-import FunctionalEditor from "../FunctionalEditor";
-import {convertToRaw} from "draft-js";
+import './modalWindow.scss';
 
 const settings = {
     [MODAL_TYPE.ADD]: {
@@ -37,27 +42,36 @@ class ModalWindow extends React.Component<IModalWindow> {
     }
 
     handleClick = () => {
-        const { addTask, changeTask, type, id, isShowContextMenu, hideContextMenu, editorState, hideModal } = this.props;
+        const { addTask, changeTask, type, id, isShowContextMenu, hideContextMenu, editorState, hideModal, selectedDayByPopup } = this.props;
 
         const draftJsConfig = convertToRaw(editorState.getCurrentContent());
         const taskDescription = draftJsConfig.blocks[0].text || '';
 
         hideModal();
+        selectDay(selectedDayByPopup);
 
         if ((type === MODAL_TYPE.CHANGE) && changeTask && id) {
-           console.log(id, taskDescription, draftJsConfig);
            changeTask(id, this.$inputHeader.current.value, taskDescription, draftJsConfig);
 
            return;
         }
 
         if (addTask) {
-            addTask(taskDescription, this.$inputHeader.current.value, draftJsConfig);
+            addTask(taskDescription, this.$inputHeader.current.value, draftJsConfig, selectedDayByPopup);
         }
 
         if (isShowContextMenu) {
             hideContextMenu();
         }
+    };
+
+    openCalendar = (event: any) => {
+        const { saveCoords, showCalendar } = this.props;
+        event.persist();
+
+        saveCoords({ x: event.clientX, y: event.clientY });
+
+        showCalendar();
     };
 
     renderLayer() {
@@ -67,20 +81,24 @@ class ModalWindow extends React.Component<IModalWindow> {
     }
 
     render() {
-        const { header, description, taskHeader, className, buttonLabel, draftJsConfig, type } = this.props;
+        const { header, className, draftJsConfig, type, selectedDay, isShowCalendar, selectedDayByPopup, hideModal } = this.props;
 
-        console.log(header);
         return (
             <React.Fragment>
                 {this.renderLayer()}
+                { isShowCalendar ? <CalendarPopup /> : null }
                 <div className={"modal__wrapper"}>
                     <div className={className}>
-                            <h2>{settings[type].name}</h2>
-                            <p>Заголовок задачи:</p>
-                            <input ref={this.$inputHeader} defaultValue={header} className="modal__input" type={"text"} />
-                            <p>{settings[type].labelForDescription}</p>
-                            <FunctionalEditor draftJsConfig={draftJsConfig} />
-                            <Button type={"form-apply"} onClick={this.handleClick} content={ settings[type].buttonLabel} />
+                        <div onClick={hideModal} className={"modal__close"}>✕</div>
+                        <h2 className={"modal__header"}>{settings[type].name}</h2>
+                        <p className={"modal__date"}>На { selectedDayByPopup ? getFormatDate(selectedDayByPopup) : getFormatDate(selectedDay)}
+                            <i onClick={(event) => this.openCalendar(event)} title={"Изменить дату"} className="demo-icon icon-calendar">&#xe800;</i>
+                        </p>
+                        <p>Заголовок задачи:</p>
+                        <input placeholder={"Введите заголовок..."} ref={this.$inputHeader} defaultValue={ type === MODAL_TYPE.CHANGE ? header : ''} className="modal__input" type={"text"} />
+                        <p>{settings[type].labelForDescription}</p>
+                        <FunctionalEditor draftJsConfig={type === MODAL_TYPE.CHANGE ? draftJsConfig : null} />
+                        <Button type={"form-apply"} onClick={this.handleClick} content={ settings[type].buttonLabel} />
                     </div>
                 </div>
             </React.Fragment>
@@ -91,7 +109,9 @@ class ModalWindow extends React.Component<IModalWindow> {
 const mapDispatchToProps = (dispatch: any) => ({
     updateEditorState: (data: any) => dispatch(updateEditorState(data)),
     hideContextMenu: () => dispatch(hideContextMenu()),
-    hideModal: () => dispatch(hideModal())
+    hideModal: () => dispatch(hideModal()),
+    saveCoords: (data: object) => dispatch(saveCoords(data)),
+    showCalendar: () => dispatch(showCalendar())
 });
 
 const mapStateToProps = (state: any) => ({
@@ -101,7 +121,10 @@ const mapStateToProps = (state: any) => ({
     type: state.modalWindow.type,
     header: state.task.header,
     draftJsConfig: state.task.draftJsConfig,
-    id: state.task.id
+    id: state.task.id,
+    selectedDay: state.app.selectedDay,
+    isShowCalendar: state.modalWindow.isShowCalendar,
+    selectedDayByPopup: state.modalWindow.selectedDayByPopup
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(ModalWindow);

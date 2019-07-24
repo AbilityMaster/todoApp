@@ -1,9 +1,16 @@
 import * as React from 'react';
 import './LeftBar.scss';
-import {MENU_LINK_TYPE, TYPE_CALENDAR} from "../../constants";
+import {MENU_LINK_TYPE, TYPE_CALENDAR, QUERY_TYPE} from "../../constants";
 import {connect} from "react-redux";
-import {saveTasks, selectDay, updateNumberOfMonths, updateRangeSelected} from "../../actions";
-import {transformDate, transformId} from '../../utils/utils';
+import {
+    saveGroupConfig,
+    saveQueryType,
+    saveTasks,
+    selectDay,
+    updateNumberOfMonths,
+    updateRangeSelected
+} from "../../actions";
+import {getInitialStateForRange, transformDate, transformId} from '../../utils/utils';
 
 const mapStateToProps = (state: any) => ({
     config: state.app.config,
@@ -15,11 +22,13 @@ const mapDispatchToProps = (dispatch: any) => ({
     saveTasks: (data: any) => dispatch(saveTasks(data)),
     selectDay: (data: object) => dispatch(selectDay(data)),
     updateNumberOfMonths: (data: number) => dispatch(updateNumberOfMonths(data)),
-    updateRangeSelected: (data: object) => dispatch(updateRangeSelected(data))
+    updateRangeSelected: (data: object) => dispatch(updateRangeSelected(data)),
+    saveGroupConfig: (data: object) => dispatch(saveGroupConfig(data)),
+    saveQueryType: (data: string) => dispatch(saveQueryType(data))
 });
 
 function LeftBar(props: any) {
-    const { updateNumberOfMonths } = props;
+    const { updateNumberOfMonths, saveQueryType } = props;
 
     const handleClickMenu = (type: string) => {
         const date = new Date();
@@ -45,7 +54,7 @@ function LeftBar(props: any) {
     };
 
     const selectToday = (date: Date) => {
-        const { config, saveTasks, selectDay } = props;
+        const { config, saveTasks, selectDay, updateRangeSelected, saveQueryType } = props;
 
         const id = transformDate(date);
 
@@ -58,7 +67,9 @@ function LeftBar(props: any) {
 
         saveTasks(tasks);
         selectDay(date);
+        updateRangeSelected(getInitialStateForRange());
         updateNumberOfMonths({ numberOfMonths: 1, type: TYPE_CALENDAR.DEFAULT });
+        saveQueryType(QUERY_TYPE.TODAY);
     };
 
     const selectTomorrow = (date: Date) => {
@@ -76,11 +87,13 @@ function LeftBar(props: any) {
 
         saveTasks(tasks);
         selectDay(newDate);
+        updateRangeSelected(getInitialStateForRange());
         updateNumberOfMonths({ numberOfMonths: 1, type: TYPE_CALENDAR.DEFAULT });
+        saveQueryType(QUERY_TYPE.TOMMOROW);
     };
 
     const selectNextWeek = () => {
-        const { config, saveTasks, updateNumberOfMonths, updateRangeSelected, rangeSelected } = props;
+        const { config, saveTasks, updateNumberOfMonths, updateRangeSelected } = props;
 
         const day = 60 * 60 * 24 * 1000;
         const week = day * 7;
@@ -104,12 +117,33 @@ function LeftBar(props: any) {
             enteredTo: new Date(_dateWeekInMilliseconds),
             to: new Date(_dateWeekInMilliseconds)
         });
+        saveQueryType(QUERY_TYPE.NEXT_WEEK);
     };
 
     const selectAll = () => {
-        const { config, saveTasks } = props;
+        const { config, saveTask, saveGroupConfig } = props;
 
+        const keys: any = [];
+
+        config.filter( (item: any) => {
+           if (!keys.find((value: any) => value.idDay === item.idDay)) {
+               keys.push({ idDay: item.idDay});
+           }
+        });
+
+        keys.forEach( (value: any) => {
+            const tasks = config.filter( (item: any) => {
+                if ( item.idDay === value.idDay) {
+                    return item;
+                }
+            });
+
+            value.tasks = tasks;
+        });
+
+        saveGroupConfig(keys);
         saveTasks(config);
+        saveQueryType(QUERY_TYPE.ALL);
         updateNumberOfMonths({ numberOfMonths: 1, type: TYPE_CALENDAR.DEFAULT });
     };
 

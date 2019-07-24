@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {convertFromRaw, Editor, RichUtils} from "draft-js";
+import { Editor, RichUtils} from "draft-js";
 import {connect} from "react-redux";
 
 import EditorBtns from "../common/InlineToolbar/InlineToolbar";
@@ -17,7 +17,7 @@ const mapDispatchToProps = (dispatch: any) => ({
 });
 
 const FunctionalEditor = (props: any) => {
-    let { editorState, draftJsConfig } = props;
+    const { editorState } = props;
 
     const handleChange = (editorState: any) => {
         const { updateEditorState } = props;

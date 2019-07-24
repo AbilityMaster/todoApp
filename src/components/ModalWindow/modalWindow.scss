@@ -3,15 +3,43 @@
   z-index: 999;
   background: #fff;
   border: 1px solid #b5b5b5;
-  border-radius: 5px;
   padding: 10px;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
   align-items: flex-start;
+  position: relative;
 
   p {
     margin-bottom: 10px;
+  }
+
+  &__close {
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    color: #de2828;
+    font-size: 23px;
+
+    &:hover {
+      color: darkred;
+      transition: color ease-out .5s;
+      cursor: pointer;
+    }
+  }
+
+  &__date {
+    i {
+      cursor: pointer;
+    }
+
+    i:hover {
+      color: darkred;
+    }
+  }
+
+  &__header {
+    margin-top: 0;
   }
 
   &__box {
@@ -50,6 +78,10 @@
     resize: vertical;
     width: 100%;
     margin-bottom: 14px;
+
+    &:focus::placeholder {
+      color: #bdc1c9;
+    }
   }
 }
 

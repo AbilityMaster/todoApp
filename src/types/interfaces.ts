@@ -1,8 +1,7 @@
-import {changeTypeModal} from "../actions/modalWindow";
-import {showModal} from "../actions";
-
 export interface IProps {
     config: ITask [];
+    groupConfig: any;
+    queryType: string;
     x: string;
     y: string;
     tasks: any;
@@ -80,13 +79,18 @@ export interface IContextMenu {
 }
 
 export interface IModalWindow {
-    addTask?(data: string, header: string, config: any): void;
+    addTask?(data: string, header: string, config: any, selectedDayByPopup: Date): void;
     onBlur?(data: boolean): void;
+    saveCoords(data: object): void;
     draftJsConfig?: any;
     config?: any;
+    selectedDayByPopup: Date;
     header?: string;
+    isShowCalendar: boolean;
+    showCalendar: () => void;
     description?: string;
     value?: string;
+    selectedDay: Date;
     type: string;
     className?: string;
     taskHeader?: string;

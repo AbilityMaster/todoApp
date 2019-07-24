@@ -1,5 +1,4 @@
 import {handleActions} from "redux-actions";
-import {changeTypeModal} from "../actions/modalWindow";
 import {selectTask} from "../actions/task";
 
 const initialState = {
