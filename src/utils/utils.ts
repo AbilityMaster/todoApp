@@ -19,6 +19,17 @@ export function transformDateArray(data: Date[]) {
 }
 
 /***
+ * Преобразует массив из текстовых id, в массив с датами
+ * @param data
+ */
+
+export function transformStringArray(data: string[]) {
+    return data.map(value => {
+        return new Date(value);
+    });
+}
+
+/***
  * Преобразовывает из id типа строки в дату
  * @param id
  */
@@ -77,4 +88,47 @@ export function getInitialStateForRange(): {from: any, to: any, enteredTo: any} 
         to: null,
         enteredTo: null
     }
-};
+}
+
+/***
+ * Обновляет массив с выбранными датам для календаря
+ * @param dates
+ * @param oldDate
+ * @param newDate
+ */
+
+export function updateDateArray( dates: Date[], oldDate: string, newDate: string) {
+    let _dates = transformDateArray(dates);
+    const del = _dates.findIndex(value => value === oldDate);
+    _dates.splice(del, 1);
+    _dates.push(newDate);
+
+    return transformStringArray(_dates);
+}
+
+export function transformToGroupConfig(config: any) {
+    const _config = deepclone(config);
+    const keys: any = [];
+
+    _config.filter( (item: any) => {
+        if (!keys.find((value: any) => value.idDay === item.idDay)) {
+            keys.push({ idDay: item.idDay});
+        }
+    });
+
+    keys.forEach( (value: any) => {
+        const tasks = _config.filter( (item: any) => {
+            if ( item.idDay === value.idDay) {
+                return item;
+            }
+        });
+
+        value.tasks = tasks;
+    });
+
+    return keys;
+}
+
+export function isEmptyArray(data: any) {
+    return data.length === 0;
+}

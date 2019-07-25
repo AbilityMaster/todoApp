@@ -1,8 +1,9 @@
 .task-container {
 //  max-height: 483px;
   overflow-y: auto;
- // width: 700px;
+  width: 100%;
   margin: 0 auto;
+  padding-right: 0;
 
   &__header {
     font-weight: 600;
@@ -34,12 +35,14 @@
   }
 }
 .main-container {
+  display: flex;
+  flex-direction: column;
   position: absolute;
   left: 240px;
   right: 0;
   bottom: 0;
   top: 0;
-  padding: 0 15px;
+  padding: 0 15px 15px 15px;
   background: #f1f1f1;
 }
 
@@ -64,4 +67,19 @@
   display: flex;
   align-items: center;
   justify-content: flex-start;
+}
+
+.search-input {
+  padding: 10px 5px;
+  background: #fff;
+  border: 1px solid rgba(34, 36, 38, 0.15);
+  outline: 0;
+  color: rgba(0, 0, 0, 0.87);
+  box-shadow: 0 0 0 0 transparent inset;
+  transition: color .1s ease,border-color .1s ease;
+  font-size: 1em;
+  line-height: 1.2857;
+  resize: vertical;
+  width: 100%;
+  margin-bottom: 14px;
 }

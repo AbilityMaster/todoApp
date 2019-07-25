@@ -5,6 +5,7 @@ import {connect} from "react-redux";
 import {useEffect, useRef} from "react";
 import {hideCalendar, selectDay} from "../../../actions/modalWindow";
 import {MONTHS, WEEKDAYS_LONG, WEEKDAYS_SHORT} from "../../../constants";
+import {selectTaskDate} from "../../../actions/task";
 
 const mapStateToProps = (state: any ) => ({
     x: state.modalWindow.x,
@@ -13,7 +14,8 @@ const mapStateToProps = (state: any ) => ({
 
 const mapDispatchToProps = (dispatch: any) => ({
    selectDay: (day: Date) => dispatch(selectDay(day)),
-   hideCalendar: () => dispatch(hideCalendar())
+   hideCalendar: () => dispatch(hideCalendar()),
+   selectTaskDate: (data: Date) => dispatch(selectTaskDate(data))
 });
 
 function CalendarPopup(props: any) {
@@ -35,8 +37,9 @@ function CalendarPopup(props: any) {
     };
 
     const handleDayClick = (day: Date) => {
-        const { hideCalendar, selectDay } = props;
+        const { hideCalendar, selectDay, selectTaskDate } = props;
 
+        selectTaskDate(day);
         selectDay(day);
         hideCalendar();
     };

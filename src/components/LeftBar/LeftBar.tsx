@@ -11,11 +11,13 @@ import {
     updateRangeSelected
 } from "../../actions";
 import {getInitialStateForRange, transformDate, transformId} from '../../utils/utils';
+import {toggleCalendar} from "../../actions/Calendar";
 
 const mapStateToProps = (state: any) => ({
     config: state.app.config,
     rangeSelected: state.app.rangeSelected,
-    type: state.app.type
+    type: state.app.type,
+    isVisible: state.calendar.isVisible
 });
 
 const mapDispatchToProps = (dispatch: any) => ({
@@ -24,11 +26,12 @@ const mapDispatchToProps = (dispatch: any) => ({
     updateNumberOfMonths: (data: number) => dispatch(updateNumberOfMonths(data)),
     updateRangeSelected: (data: object) => dispatch(updateRangeSelected(data)),
     saveGroupConfig: (data: object) => dispatch(saveGroupConfig(data)),
-    saveQueryType: (data: string) => dispatch(saveQueryType(data))
+    saveQueryType: (data: string) => dispatch(saveQueryType(data)),
+    toggleCalendar: () => dispatch(toggleCalendar())
 });
 
 function LeftBar(props: any) {
-    const { updateNumberOfMonths, saveQueryType } = props;
+    const { updateNumberOfMonths, saveQueryType, updateRangeSelected, isVisible, toggleCalendar } = props;
 
     const handleClickMenu = (type: string) => {
         const date = new Date();
@@ -54,7 +57,7 @@ function LeftBar(props: any) {
     };
 
     const selectToday = (date: Date) => {
-        const { config, saveTasks, selectDay, updateRangeSelected, saveQueryType } = props;
+        const { config, saveTasks, selectDay, saveQueryType } = props;
 
         const id = transformDate(date);
 
@@ -70,6 +73,9 @@ function LeftBar(props: any) {
         updateRangeSelected(getInitialStateForRange());
         updateNumberOfMonths({ numberOfMonths: 1, type: TYPE_CALENDAR.DEFAULT });
         saveQueryType(QUERY_TYPE.TODAY);
+        if (!isVisible) {
+            toggleCalendar();
+        }
     };
 
     const selectTomorrow = (date: Date) => {
@@ -90,6 +96,9 @@ function LeftBar(props: any) {
         updateRangeSelected(getInitialStateForRange());
         updateNumberOfMonths({ numberOfMonths: 1, type: TYPE_CALENDAR.DEFAULT });
         saveQueryType(QUERY_TYPE.TOMMOROW);
+        if (!isVisible) {
+            toggleCalendar();
+        }
     };
 
     const selectNextWeek = () => {
@@ -118,10 +127,14 @@ function LeftBar(props: any) {
             to: new Date(_dateWeekInMilliseconds)
         });
         saveQueryType(QUERY_TYPE.NEXT_WEEK);
+
+        if (!isVisible) {
+            toggleCalendar();
+        }
     };
 
     const selectAll = () => {
-        const { config, saveTask, saveGroupConfig } = props;
+        const { config, saveGroupConfig } = props;
 
         const keys: any = [];
 
@@ -144,6 +157,12 @@ function LeftBar(props: any) {
         saveGroupConfig(keys);
         saveTasks(config);
         saveQueryType(QUERY_TYPE.ALL);
+
+        if (isVisible) {
+            toggleCalendar();
+        }
+
+        updateRangeSelected(getInitialStateForRange());
         updateNumberOfMonths({ numberOfMonths: 1, type: TYPE_CALENDAR.DEFAULT });
     };
 

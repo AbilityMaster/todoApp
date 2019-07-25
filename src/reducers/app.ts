@@ -18,7 +18,14 @@ import {
     updateCurrentMonth,
     saveToDraftJs,
     saveTasks,
-    updateNumberOfMonths, updateRangeSelected, hideModal, showModal, saveGroupConfig, saveQueryType
+    updateNumberOfMonths,
+    updateRangeSelected,
+    hideModal,
+    showModal,
+    saveGroupConfig,
+    saveQueryType,
+    saveSearchConfig,
+    saveSearchValue
 } from "../actions";
 import {handleActions} from "redux-actions";
 import { EditorState } from 'draft-js';
@@ -48,7 +55,9 @@ const initialState = {
     },
     type: TYPE_CALENDAR.DEFAULT,
     groupConfig: {},
-    queryType: ''
+    queryType: '',
+    searchConfig: [],
+    searchValue: ''
 };
 
 Object.freeze(initialState);
@@ -56,6 +65,14 @@ Object.freeze(initialState);
 // @ts-ignore
 export default handleActions(
     {
+        // @ts-ignore
+        [saveSearchValue]: (state, action) => {
+            console.log(action.type);
+            return {
+                ...state,
+                searchValue: action.payload
+            }
+        },
         // @ts-ignore
         [saveQueryType]: (state, action) => {
             console.log(action.type);
@@ -253,6 +270,14 @@ export default handleActions(
             return {
                 ...state,
                 groupConfig: action.payload
+            }
+        },
+        // @ts-ignore
+        [saveSearchConfig]: (state, action) => {
+            console.log(action.type);
+            return {
+                ...state,
+                searchConfig: action.payload
             }
         },
     },

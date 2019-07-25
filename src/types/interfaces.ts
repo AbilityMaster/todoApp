@@ -1,10 +1,12 @@
 export interface IProps {
+    searchValue: string;
     config: ITask [];
     groupConfig: any;
     queryType: string;
     x: string;
     y: string;
     tasks: any;
+    taskDate: Date;
     isShowContextMenu: boolean;
     isShowLoader: boolean;
     isShowModal: boolean;
@@ -25,6 +27,9 @@ export interface IProps {
     hideContextMenu: () => void;
     saveTasks: (data: any) => void;
     changeTypeModal: (data: string) => void;
+    isVisible: boolean;
+    fetchSelectedDays: (data: Date[]) => void;
+    searchConfig: any;
 }
 
 export interface ITask {
@@ -49,15 +54,22 @@ export interface INote {
 
 
 export interface ITaskComponent extends ITask{
+    currentId: string;
     index: number;
     editorState: any;
+    listSelectedDays: Date [];
     updateEditorState: (data: any) => void;
-    deleteTask: (id: string) => void;
-    makeDoneTask: (id: string, checked: boolean) => void;
+    deleteTask: (data: { config:  ITask [], listSelectedDays: Date [], currentId: string, id: string }) => void;
+    makeDoneTask: (data: object) => void;
     saveToDraftJs: (config: any) => void;
+    saveSearchConfig: (data: any) => void;
     changeTypeModal: (data: string) => void;
     showModal: () => void;
-    selectTask?: (data: object) => void;
+    selectTask: (data: object) => void;
+    config: any;
+    idDay: string;
+    selectTaskDate: (data: Date) => void;
+    saveTasks: (data: object) => void;
 }
 
 export interface ITextArea {
@@ -79,7 +91,13 @@ export interface IContextMenu {
 }
 
 export interface IModalWindow {
-    addTask?(data: string, header: string, config: any, selectedDayByPopup: Date): void;
+    currentId: string;
+    saveTasks: (data: any) => void;
+    listSelectedDays: Date [];
+    fetchSelectedDays: (data: Date []) => void;
+    addTask(data: object ): void;
+    saveGroupConfig: (data: any) => void;
+    taskDate: Date;
     onBlur?(data: boolean): void;
     saveCoords(data: object): void;
     draftJsConfig?: any;
@@ -97,10 +115,12 @@ export interface IModalWindow {
     textAreaClassName?: string;
     buttonLabel?: string;
     id?: string;
-    changeTask?: (id: string, header: string, data: string, config: object) => void;
+    changeTask: (data: any) => void;
     editorState: any;
     updateEditorState: (data: any) => void;
     isShowContextMenu: boolean;
     hideContextMenu: () => void;
     hideModal: () => void;
+    idDay: string;
+    queryType: string;
 }

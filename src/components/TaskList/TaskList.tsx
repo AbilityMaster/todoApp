@@ -19,11 +19,10 @@ class TaskList extends React.Component<any> {
         return tasks.map((value: any, index: number) => <Task
             key={value.id}
             id={value.id}
+            idDay={value.idDay}
             index={index}
             header={value.header}
             description={value.description}
-            deleteTask={() => {}}
-            makeDoneTask={() => {}}
             draftJsConfig={value.draftJsConfig || {}}
             isDone={value.isDone}
         /> );

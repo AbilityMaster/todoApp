@@ -1,16 +1,46 @@
 import * as React from 'react';
-import './task.scss';
-import {MODAL_TYPE} from "../../constants";
-import {ITaskComponent} from "../../types/interfaces";
-import {convertFromRaw} from "draft-js";
-import {saveToDraftJs, showModal, updateEditorState} from "../../actions";
 import {connect} from 'react-redux';
+import {convertFromRaw} from "draft-js";
 import { EditorState } from "draft-js";
+
+import {MODAL_TYPE} from "../../constants";
+import {
+    deleteTask,
+    makeDoneTask,
+    saveSearchConfig,
+    saveTasks,
+    saveToDraftJs,
+    showModal,
+    updateEditorState
+} from "../../actions";
 import {changeTypeModal} from "../../actions/modalWindow";
-import {selectTask} from "../../actions/task";
+import {selectTask, selectTaskDate} from "../../actions/task";
+import './task.scss';
+import {ITaskComponent} from "../../types/interfaces";
+import {deepclone, transformId} from "../../utils/utils";
+
+
+const mapStateToProps = (state: any) => ({
+    editorState: state.app.editorState,
+    config: state.app.config,
+    currentId: state.app.currentId,
+    listSelectedDays: state.app.listSelectedDays
+});
+
+const mapDispatchToProps = (dispatch: any) => ({
+    saveToDraftJs: (config: any) => dispatch(saveToDraftJs(config)),
+    updateEditorState: (config: any) => dispatch(updateEditorState(config)),
+    changeTypeModal: (data: string) => dispatch(changeTypeModal(data)),
+    showModal: () => dispatch(showModal()),
+    selectTask: (data: object) => dispatch(selectTask(data)),
+    selectTaskDate: (data: Date) => dispatch(selectTaskDate(data)),
+    makeDoneTask: (data: object) => dispatch(makeDoneTask(data)),
+    deleteTask: (data: any) => dispatch(deleteTask(data)),
+    saveTasks: (data: any) => dispatch(saveTasks(data)),
+    saveSearchConfig: (data: any) => dispatch(saveSearchConfig(data))
+});
 
 class Task extends React.Component<ITaskComponent> {
-
     $doneInput = React.createRef<HTMLInputElement>();
 
     get classNames() {
@@ -42,32 +72,52 @@ class Task extends React.Component<ITaskComponent> {
     }
 
     delete = () => {
-        const { id, deleteTask } = this.props;
+        const { currentId, config, listSelectedDays, deleteTask, saveTasks, id } = this.props;
+        const _config = deepclone(config);
 
-        deleteTask(id);
+        const indexDel = _config.findIndex((value: any) => (value.id === id));
+        _config.splice(indexDel, 1);
+
+        // eslint-disable-next-line array-callback-return
+        const tasks = _config.filter((value: any) => {
+            if (value.idDay === currentId) {
+                return value;
+            }
+        });
+
+        if (tasks.length === 0) {
+            const index = listSelectedDays.findIndex(value => (value === transformId(currentId)) );
+            listSelectedDays.splice(index, 1);
+        }
+
+        deleteTask({
+            config: _config,
+            listSelectedDays,
+            currentId,
+            id
+        });
+
+        saveTasks(tasks);
     };
 
-    showModal = () => {
-        const { isDone, header, id, description, draftJsConfig, updateEditorState, changeTypeModal, showModal, selectTask } = this.props;
+    editTask = () => {
+        const { idDay, isDone, header, id, description, draftJsConfig, updateEditorState, changeTypeModal, showModal, selectTask, selectTaskDate } = this.props;
 
         if (isDone) {
             return;
         }
 
-       if (draftJsConfig) {
+        selectTaskDate(transformId(idDay));
 
+       if (draftJsConfig) {
           const config = convertFromRaw(draftJsConfig);
           let ed = EditorState.createWithContent(config);
 
           updateEditorState(ed);
        }
 
+       selectTask({ header, description, draftJsConfig, id, idDay });
        showModal();
-
-       if (selectTask) {
-           selectTask({ header, description, draftJsConfig, id });
-       }
-
        changeTypeModal(MODAL_TYPE.CHANGE);
     };
 
@@ -75,16 +125,26 @@ class Task extends React.Component<ITaskComponent> {
         this.setState({ isShow: data });
     };
 
-    handleChange = () => {
-        const { makeDoneTask, id } = this.props;
+    handleChangeTaskStatus = () => {
+        const { currentId, config, makeDoneTask, id, selectTaskDate, idDay, saveTasks, saveSearchConfig } = this.props;
+        const _config = deepclone(config);
 
-        let checked = false;
+        const tasks = _config.filter((value: any) => {
+            if (value.idDay === idDay) {
+                return value;
+            }
+        });
 
-        if (this.$doneInput && this.$doneInput.current) {
-            checked = this.$doneInput.current.checked;
+        const task = tasks.find((value: any) => (value.id === id));
+
+        if (task && this.$doneInput && this.$doneInput.current) {
+            task.isDone = this.$doneInput.current.checked;
+            makeDoneTask( { config: _config, currentId, id, checked: this.$doneInput.current.checked });
         }
 
-        makeDoneTask(id, checked);
+        saveTasks(tasks);
+        selectTaskDate(transformId(idDay));
+        saveSearchConfig(_config);
     };
 
     render() {
@@ -92,7 +152,7 @@ class Task extends React.Component<ITaskComponent> {
 
        return (
             <React.Fragment>
-                   <div onClick={this.showModal} className={this.classNames.task}>
+                   <div onClick={this.editTask} className={this.classNames.task}>
                        <div className={this.classNames.position}>{index + 1}</div>
                        <div className={"task__info"}>
                            <div className="task__header">{header}</div>
@@ -104,7 +164,7 @@ class Task extends React.Component<ITaskComponent> {
                            ref={this.$doneInput}
                            checked={isDone}
                            onClick={(event) => {event.stopPropagation()}}
-                           onChange={this.handleChange}
+                           onChange={this.handleChangeTaskStatus}
                            type="checkbox"
                            name="done"
                            id="checkbox-1"
@@ -116,17 +176,5 @@ class Task extends React.Component<ITaskComponent> {
        );
     }
 }
-
-const mapStateToProps = (state: any) => ({
-    editorState: state.app.editorState,
-});
-
-const mapDispatchToProps = (dispatch: any) => ({
-    saveToDraftJs: (config: any) => dispatch(saveToDraftJs(config)),
-    updateEditorState: (config: any) => dispatch(updateEditorState(config)),
-    changeTypeModal: (data: string) => dispatch(changeTypeModal(data)),
-    showModal: () => dispatch(showModal()),
-    selectTask: (data: object) => dispatch(selectTask(data))
-});
 
 export default connect(mapStateToProps, mapDispatchToProps)(Task);

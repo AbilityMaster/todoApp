@@ -2,6 +2,7 @@ import {handleActions} from "redux-actions";
 import {changeTypeModal, hideCalendar, saveCoords, selectDay, showCalendar} from "../actions/modalWindow";
 
 const initialState = {
+    taskDate: undefined,
     type: '',
     x: '',
     y: '',

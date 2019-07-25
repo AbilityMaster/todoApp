@@ -12,9 +12,9 @@ import Calendar from "../Calendar";
 import LabelDate from "../common/LabelDate";
 
 import {
-    deepclone,
-    transformDate,
-    transformId
+    deepclone, isEmptyArray,
+    transformDate, transformDateArray,
+    transformId, transformToGroupConfig, updateDateArray
 } from "../../utils/utils";
 import {MODAL_TYPE, QUERY_TYPE} from "../../constants";
 import {
@@ -24,19 +24,18 @@ import {
     makeDoneTask,
     changeTask,
     showModal,
-    initLoad, openContextMenu, hideContextMenu, saveTasks, selectDay
+    initLoad, openContextMenu, hideContextMenu, saveTasks, selectDay, fetchSelectedDays
 } from "../../actions";
 import "./app.scss";
 import "react-day-picker/lib/style.css";
 import {IProps, ITask} from "../../types/interfaces";
 import {changeTypeModal} from "../../actions/modalWindow";
 import TaskList from "../TaskList";
+import SearchInput from "../common/SearchInput/SearchInput";
 
 interface AppState {
     forScroll: number;
 }
-
-
 
 const mapStateToProps = (state: any) => ({
     tasks: state.app.tasks,
@@ -53,7 +52,11 @@ const mapStateToProps = (state: any) => ({
     y: state.app.y,
     currentMonth: state.app.currentMonth,
     groupConfig: state.app.groupConfig,
-    queryType: state.app.queryType
+    taskDate: state.task.taskDate,
+    queryType: state.app.queryType,
+    isVisible: state.calendar.isVisible,
+    searchConfig: state.app.searchConfig,
+    searchValue: state.app.searchValue
 });
 
 const mapDispatchToProps = (dispatch: any) => ({
@@ -67,7 +70,8 @@ const mapDispatchToProps = (dispatch: any) => ({
     openContextMenu: (data: object) => dispatch(openContextMenu(data)),
     hideContextMenu: () => dispatch(hideContextMenu()),
     saveTasks: (data: any) => dispatch(saveTasks(data)),
-    changeTypeModal: (data: string) => dispatch(changeTypeModal(data))
+    changeTypeModal: (data: string) => dispatch(changeTypeModal(data)),
+    fetchSelectedDays: (data: Date[]) => dispatch(fetchSelectedDays(data))
 });
 
 class App extends React.Component<IProps> {
@@ -95,7 +99,7 @@ class App extends React.Component<IProps> {
         }
     }
 
-    openModal = () => {
+    addTask = () => {
        const { currentId, showModal, changeTypeModal } = this.props;
 
         if (!currentId ) {
@@ -117,120 +121,6 @@ class App extends React.Component<IProps> {
         }
     };
 
-    makeDoneTask = (id: string, checked: boolean): void => {
-        const { config, currentId, makeDoneTask, selectedDay, saveTasks } = this.props;
-
-        const _config = deepclone(config);
-        const idDay = transformDate(selectedDay);
-        // eslint-disable-next-line array-callback-return
-        const tasks = _config.filter((value: any) => {
-                if (value.idDay === idDay) {
-                    return value;
-                }
-        });
-
-        const task = tasks.find((value: any) => (value.id === id));
-
-        if (task) {
-            task.isDone = checked;
-        }
-
-        makeDoneTask( { config: _config, currentId, id, checked });
-        saveTasks(tasks);
-    };
-
-    addTask = (data: string, header: string, draftJsConfig: any, selectedDayByPopup?: Date): void => {
-      const { config, currentId, listSelectedDays, addTask, saveTasks } = this.props;
-
-      if (selectedDayByPopup) {
-          selectDay(selectedDayByPopup);
-      }
-
-      const _config: ITask [] = deepclone(config);
-
-      if (data === '') {
-          return;
-      }
-
-      _config.push({
-          idDay: selectedDayByPopup ? transformDate(selectedDayByPopup) : currentId,
-          id: nanoid(7),
-          header: header,
-          description: data,
-          isDone: false,
-          draftJsConfig: draftJsConfig
-      });
-
-      const tasks = _config.filter(value => (value.idDay === currentId));
-
-      if (!listSelectedDays.find( value => (transformDate(value) === currentId))) {
-          if (selectedDayByPopup) {
-              listSelectedDays.push(selectedDayByPopup);
-          } else {
-              listSelectedDays.push(transformId(currentId));
-          }
-      }
-
-      this.setState({ forScroll: tasks.length });
-      addTask({config: _config, isShowModal: false, listSelectedDays});
-      saveTasks(tasks);
-    };
-
-    changeTask = (id: string, header: string, data: string, draftJsConfig: object): void => {
-        if (data === '') {
-            return;
-        }
-
-        const { currentId, config, changeTask, saveTasks } = this.props;
-        const _config = deepclone(config);
-        const task = _config.find((value: any) => (value.id === id));
-        const idDay = task.idDay || '';
-
-        // eslint-disable-next-line array-callback-return
-        const tasks = _config.filter((value: any) => {
-           if (value.idDay === idDay) {
-               return value;
-           }
-        });
-        const _task = tasks.find((value: any) => (value.id === id));
-
-
-        _task.header = header;
-        _task.description = data;
-        _task.draftJsConfig = draftJsConfig;
-
-        changeTask({ config: _config, idDay: currentId, idTask: id, data, task: _task });
-        saveTasks(tasks);
-    };
-
-    deleteTask = (id: string) => {
-        const { currentId, config, listSelectedDays, deleteTask, saveTasks } = this.props;
-        const _config = deepclone(config);
-
-        const indexDel = _config.findIndex((value: any) => (value.id === id));
-        _config.splice(indexDel, 1);
-
-        // eslint-disable-next-line array-callback-return
-        const tasks = _config.filter((value: any) => {
-            if (value.idDay === currentId) {
-                return value;
-            }
-        });
-
-        if (tasks.length === 0) {
-           const index = listSelectedDays.findIndex(value => (value === transformId(currentId)) );
-           listSelectedDays.splice(index, 1);
-        }
-
-        deleteTask({
-            config: _config,
-            listSelectedDays,
-            currentId,
-            id
-        });
-        saveTasks(tasks);
-    };
-
     scrollToBottom = () => {
         if (this.$taskContainer && this.$taskContainer.current) {
             this.$taskContainer.current.scrollTo(0, this.$taskContainer.current.scrollHeight);
@@ -249,11 +139,10 @@ class App extends React.Component<IProps> {
                 <Task
                     key={value.id}
                     id={value.id}
+                    idDay={value.idDay}
                     index={index}
                     header={value.header}
                     description={value.description}
-                    deleteTask={this.deleteTask}
-                    makeDoneTask={this.makeDoneTask}
                     draftJsConfig={value.draftJsConfig || {}}
                     isDone={value.isDone}
                 />
@@ -262,13 +151,28 @@ class App extends React.Component<IProps> {
     }
 
     renderTaskLists() {
-        const { groupConfig } = this.props;
+        const { config, searchValue } = this.props;
+        let _config = deepclone(config);
+        const regExp = new RegExp(searchValue, 'i');
 
-        if (Object.keys(groupConfig).length === 0) {
-            return null;
+        if (searchValue) {
+            _config = _config.filter((value: any) => {
+                if (regExp.test(value.header)) {
+                    return value;
+                }
+            })
         }
 
-        return groupConfig.map((value: any, index: number) => {
+        _config = transformToGroupConfig(_config);
+
+        if (Object.keys(_config).length === 0) {
+            return <Note
+                header='Нет задач'
+                content='Не найдено задач'
+            />;
+        }
+
+        return _config.map((value: any, index: number) => {
            return (
                <TaskList
                    key={index}
@@ -280,35 +184,31 @@ class App extends React.Component<IProps> {
     }
 
     render() {
-        const { isShowModal, isShowLoader, isShowContextMenu, x, y, tasks, queryType } = this.props;
+        const { isShowModal, isShowLoader, isShowContextMenu, x, y, tasks, queryType, isVisible } = this.props;
 
         return (
             <React.Fragment>
                 <LeftBar/>
-                { isShowContextMenu ? <ContextMenu openModal={this.openModal}  x={x} y={y} /> : null }
+                { isShowContextMenu ? <ContextMenu openModal={this.addTask}  x={x} y={y} /> : null }
                 { isShowLoader ? <Loader /> : null}
-                <div className="main-container" style={isShowLoader ? {filter: 'blur(6px)'} : {display: 'block'}}>
+                <div className="main-container" style={isShowLoader ? {filter: 'blur(6px)'} : {}}>
                 <div className={"container"}>
                     <LabelDate />
-                    <div onClick={this.openModal} className={"button-add"}>Добавить +</div>
+                    <div onClick={this.addTask} className={"button-add"}>Добавить +</div>
                 </div>
                 <Calendar />
-                { (tasks.length === 0) ? <Note
+                { (tasks.length === 0) && (queryType !== QUERY_TYPE.ALL) ? <Note
                     header='Нет задач'
                     content='В выбранный день нет задач'
                 /> : null }
-                { queryType !== QUERY_TYPE.ALL ? <div ref={this.$taskContainer} className={"task-container"}>
+                { queryType !== QUERY_TYPE.ALL ? <div ref={this.$taskContainer}  className={"task-container"}>
                     {this.renderTasks()}
                 </div> : null }
                 { queryType === QUERY_TYPE.ALL ? <div ref={this.$taskContainer} className={"task-container"}>
+                    <SearchInput />
                     {this.renderTaskLists()}
                 </div> : null }
-                { isShowModal ?
-                    <ModalWindow
-                        className={"modal"}
-                        addTask={this.addTask}
-                        changeTask={this.changeTask}
-                    /> : null}
+                { isShowModal ? <ModalWindow className={"modal"} /> : null}
                 </div>
             </React.Fragment>
         )

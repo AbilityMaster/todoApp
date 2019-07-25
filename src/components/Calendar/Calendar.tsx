@@ -2,13 +2,13 @@ import * as React from 'react';
 import {connect} from "react-redux";
 import DayPicker, {DayModifiers, DateUtils} from "react-day-picker";
 
-import {MONTHS, QUERY_TYPE, TYPE_CALENDAR, WEEKDAYS_LONG, WEEKDAYS_SHORT} from "../../constants";
+import {MONTHS, TYPE_CALENDAR, WEEKDAYS_LONG, WEEKDAYS_SHORT} from "../../constants";
 import {
     transformDate,
     transformDateArray,
     transformId,
     getRangeFromDate,
-    getInitialStateForRange
+    getInitialStateForRange, deepclone
 } from "../../utils/utils";
 import {
     openContextMenu, saveQueryType, saveTasks,
@@ -17,6 +17,8 @@ import {
 } from "../../actions";
 import './Calendar.scss';
 import HelpBox from '../common/HelpBox';
+import {toggleCalendar} from "../../actions/Calendar";
+import {selectTaskDate} from "../../actions/task";
 
 const mapStateToProps = (state: any) => ({
     tasks: state.app.tasks,
@@ -27,7 +29,8 @@ const mapStateToProps = (state: any) => ({
     currentMonth: state.app.currentMonth,
     numberOfMonths: state.app.numberOfMonths,
     rangeSelected: state.app.rangeSelected,
-    type: state.app.type
+    type: state.app.type,
+    isVisible: state.calendar.isVisible
 });
 
 const mapDispatchToProps = (dispatch: any) => ({
@@ -38,17 +41,16 @@ const mapDispatchToProps = (dispatch: any) => ({
     openContextMenu: (data: object) => dispatch(openContextMenu(data)),
     saveTasks: (data: any) => dispatch(saveTasks(data)),
     updateRangeSelected: (data: object) => dispatch(updateRangeSelected(data)),
-    saveQueryType: (data: string) => dispatch(saveQueryType(data))
+    saveQueryType: (data: string) => dispatch(saveQueryType(data)),
+    toggleCalendar: () => dispatch(toggleCalendar()),
+    selectTaskDate: (data: Date) => dispatch(selectTaskDate(data))
 });
 
 const Calendar = (props: any) => {
-    const { updateCurrentMonth, selectedDay, numberOfMonths, updateRangeSelected, rangeSelected, type } = props;
-    const [ isShowCalendar, toggle ] = React.useState(true);
+    const { updateCurrentMonth, selectedDay, numberOfMonths, updateRangeSelected, rangeSelected, type, toggleCalendar, isVisible } = props;
     const [ isShowHelpBox, updateHelpBoxVisibility ] = React.useState(false);
 
     const isSelectingFirstDay = (from: Date | null, to: Date | null, day: Date | null) => {
-        // @ts-ignore
-
         // @ts-ignore
         const isBeforeFirstDay = from && DateUtils.isDayBefore(day, from);
         const isRangeSelected = from && to;
@@ -60,7 +62,7 @@ const Calendar = (props: any) => {
     };
 
     const handleDayClick = (day : Date) => {
-        const { currentId, setId, selectDay, config, saveTasks, type, saveQueryType } = props;
+        const { currentId, setId, selectDay, config, saveTasks, type, saveQueryType, selectTaskDate } = props;
 
         saveQueryType('');
 
@@ -78,12 +80,18 @@ const Calendar = (props: any) => {
                 setId(id);
             }
 
+            selectTaskDate(day);
             saveTasks(tasks);
             selectDay(day);
         }
 
         if (type === TYPE_CALENDAR.RANGE) {
             const {from, to, enteredTo} = rangeSelected;
+
+            if (!enteredTo) {
+                return;
+            }
+
             const keysData = getRangeFromDate(from, enteredTo);
             const ids = transformDateArray(keysData);
             const tasks: any = [];
@@ -136,17 +144,20 @@ const Calendar = (props: any) => {
     };
 
     const handleContextMenuDayClick = (day: Date, modifiers: DayModifiers, e: React.MouseEvent<HTMLDivElement>) => {
-        const { openContextMenu, selectDayMemory } = props;
+        const { openContextMenu, selectDayMemory, selectTaskDate } = props;
 
         e.preventDefault();
         openContextMenu({ x: `${e.clientX}px`, y: `${e.clientY}px` });
         selectDayMemory(day);
+        selectTaskDate(day);
     };
 
     const getModifiers = () => {
         const { config, currentMonth } = props;
         let { listSelectedDays } = props;
         const { from, enteredTo } = rangeSelected;
+
+        const _config = deepclone(config);
 
         if (currentMonth) {
             // eslint-disable-next-line array-callback-return
@@ -165,7 +176,7 @@ const Calendar = (props: any) => {
 
         for (let i = 0; i < dates.length; i++) {
             let counter = 0;
-            tasksPerDay = config.filter((value: any) => (value.idDay === dates[i]));
+            tasksPerDay = _config.filter((value: any) => (value.idDay === dates[i]));
 
             for (let i = 0; i < tasksPerDay.length; i++) {
                 if (tasksPerDay[i].isDone) {
@@ -193,12 +204,12 @@ const Calendar = (props: any) => {
 
     return (
         <React.Fragment>
-            <p onClick={() => {toggle(!isShowCalendar)}} className={"label-button"}>{isShowCalendar ? '▼ Скрыть' : '▶ Показать'} календарь</p>
+            <p onClick={() => {toggleCalendar()}} className={"label-button"}>{isVisible ? '▼ Скрыть' : '▶ Показать'} календарь</p>
             <div className={"container"}>
                 {/*<div className={"add-button"}><span>+</span> Добавить</div>*/}
                 <div className={"container__calendar"}>
                     {/*<div className={"settings-btn"}>⚙</div>*/}
-                    { isShowCalendar ? (
+                    { isVisible ? (
                         <React.Fragment>
                             <DayPicker
                                 numberOfMonths={numberOfMonths}
