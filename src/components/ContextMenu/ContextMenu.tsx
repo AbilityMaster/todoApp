@@ -15,7 +15,8 @@ const mapDispatchToProps = (dispatch: any) => ({
 const mapStateToProps = (state: any) => ({
     tempSelectedDay: state.app.tempSelectedDay,
     currentId: state.app.currentId,
-    config: state.app.config
+    config: state.app.config,
+    taskDate: state.app.taskDate
 });
 
 function ContextMenu(props: IContextMenu) {
@@ -47,10 +48,14 @@ function ContextMenu(props: IContextMenu) {
     const deleteAll = () => {
       const { config, tempSelectedDay, fetchConfig } = props;
 
-      const indexDel = config.findIndex(value => (value.idDay === transformDate(tempSelectedDay)));
-      config.splice(indexDel, 1);
+      const idSearch = transformDate(tempSelectedDay)
+      const _config = config.filter(value => {
+          if (value.idDay !== idSearch) {
+              return value;
+          }
+      });
 
-      fetchConfig(config);
+      fetchConfig(_config);
       hideContextMenu();
     };
 

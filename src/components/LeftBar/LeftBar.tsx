@@ -1,9 +1,8 @@
 import * as React from 'react';
 import './LeftBar.scss';
-import {MENU_LINK_TYPE, TYPE_CALENDAR, QUERY_TYPE} from "../../constants";
+import {MENU_LINK_TYPE, QUERY_TYPE, TYPE_CALENDAR} from "../../constants";
 import {connect} from "react-redux";
 import {
-    saveGroupConfig,
     saveQueryType,
     saveTasks,
     selectDay,
@@ -25,7 +24,6 @@ const mapDispatchToProps = (dispatch: any) => ({
     selectDay: (data: object) => dispatch(selectDay(data)),
     updateNumberOfMonths: (data: number) => dispatch(updateNumberOfMonths(data)),
     updateRangeSelected: (data: object) => dispatch(updateRangeSelected(data)),
-    saveGroupConfig: (data: object) => dispatch(saveGroupConfig(data)),
     saveQueryType: (data: string) => dispatch(saveQueryType(data)),
     toggleCalendar: () => dispatch(toggleCalendar())
 });
@@ -134,27 +132,8 @@ function LeftBar(props: any) {
     };
 
     const selectAll = () => {
-        const { config, saveGroupConfig } = props;
+        const { config } = props;
 
-        const keys: any = [];
-
-        config.filter( (item: any) => {
-           if (!keys.find((value: any) => value.idDay === item.idDay)) {
-               keys.push({ idDay: item.idDay});
-           }
-        });
-
-        keys.forEach( (value: any) => {
-            const tasks = config.filter( (item: any) => {
-                if ( item.idDay === value.idDay) {
-                    return item;
-                }
-            });
-
-            value.tasks = tasks;
-        });
-
-        saveGroupConfig(keys);
         saveTasks(config);
         saveQueryType(QUERY_TYPE.ALL);
 

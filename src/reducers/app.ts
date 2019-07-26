@@ -22,7 +22,6 @@ import {
     updateRangeSelected,
     hideModal,
     showModal,
-    saveGroupConfig,
     saveQueryType,
     saveSearchConfig,
     saveSearchValue
@@ -54,7 +53,6 @@ const initialState = {
         enteredTo: null
     },
     type: TYPE_CALENDAR.DEFAULT,
-    groupConfig: {},
     queryType: '',
     searchConfig: [],
     searchValue: ''
@@ -262,14 +260,6 @@ export default handleActions(
             return {
                 ...state,
                 rangeSelected: action.payload
-            }
-        },
-        // @ts-ignore
-        [saveGroupConfig]: (state, action) => {
-            console.log(action.type);
-            return {
-                ...state,
-                groupConfig: action.payload
             }
         },
         // @ts-ignore

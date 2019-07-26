@@ -110,6 +110,7 @@ export function transformToGroupConfig(config: any) {
     const _config = deepclone(config);
     const keys: any = [];
 
+    // eslint-disable-next-line array-callback-return
     _config.filter( (item: any) => {
         if (!keys.find((value: any) => value.idDay === item.idDay)) {
             keys.push({ idDay: item.idDay});
@@ -117,13 +118,12 @@ export function transformToGroupConfig(config: any) {
     });
 
     keys.forEach( (value: any) => {
-        const tasks = _config.filter( (item: any) => {
-            if ( item.idDay === value.idDay) {
+        // eslint-disable-next-line array-callback-return
+        value.tasks = _config.filter((item: any) => {
+            if (item.idDay === value.idDay) {
                 return item;
             }
         });
-
-        value.tasks = tasks;
     });
 
     return keys;

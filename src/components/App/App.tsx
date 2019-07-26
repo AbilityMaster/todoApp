@@ -92,9 +92,11 @@ class App extends React.Component<IProps> {
     }
 
     componentDidUpdate(prevProps: Readonly<IProps>, prevState: Readonly<{}>, snapshot?: any): void {
+        const { queryType } = this.props;
+
         const prevForScroll = deepclone(prevState);
 
-        if (this.state.forScroll !== prevForScroll) {
+        if ((this.state.forScroll !== prevForScroll) && (queryType !== QUERY_TYPE.ALL)) {
             this.scrollToBottom()
         }
     }
@@ -134,20 +136,26 @@ class App extends React.Component<IProps> {
             return null;
         }
 
-        return tasks.map((value: any, index: number) => {
-            return (
-                <Task
-                    key={value.id}
-                    id={value.id}
-                    idDay={value.idDay}
-                    index={index}
-                    header={value.header}
-                    description={value.description}
-                    draftJsConfig={value.draftJsConfig || {}}
-                    isDone={value.isDone}
-                />
-            );
-        })
+        return (
+            <div ref={this.$taskContainer}  className={"content-container"}>
+                {
+                    tasks.map((value: any, index: number) => {
+                        return (
+                            <Task
+                                key={value.id}
+                                id={value.id}
+                                idDay={value.idDay}
+                                index={index}
+                                header={value.header}
+                                description={value.description}
+                                draftJsConfig={value.draftJsConfig || {}}
+                                isDone={value.isDone}
+                            />
+                        );
+                    })
+                }
+            </div>
+        )
     }
 
     renderTaskLists() {
@@ -172,43 +180,43 @@ class App extends React.Component<IProps> {
             />;
         }
 
-        return _config.map((value: any, index: number) => {
-           return (
-               <TaskList
-                   key={index}
-                   name={value.idDay}
-                   tasks={value.tasks}
-               />
-           )
-        });
+        return (
+            <React.Fragment>
+                <SearchInput />
+                <div ref={this.$taskContainer} className={"content-container"}>
+                    { _config.map((value: any, index: number) =>
+                        <TaskList
+                            key={index}
+                            name={value.idDay}
+                            tasks={value.tasks}
+                        />
+                    )}
+                </div>
+            </React.Fragment>
+        )
     }
 
     render() {
-        const { isShowModal, isShowLoader, isShowContextMenu, x, y, tasks, queryType, isVisible } = this.props;
+        const { isShowModal, isShowLoader, isShowContextMenu, x, y, tasks, queryType } = this.props;
 
         return (
             <React.Fragment>
-                <LeftBar/>
+                <LeftBar addTask={this.addTask} />
                 { isShowContextMenu ? <ContextMenu openModal={this.addTask}  x={x} y={y} /> : null }
                 { isShowLoader ? <Loader /> : null}
                 <div className="main-container" style={isShowLoader ? {filter: 'blur(6px)'} : {}}>
-                <div className={"container"}>
-                    <LabelDate />
-                    <div onClick={this.addTask} className={"button-add"}>Добавить +</div>
-                </div>
-                <Calendar />
-                { (tasks.length === 0) && (queryType !== QUERY_TYPE.ALL) ? <Note
-                    header='Нет задач'
-                    content='В выбранный день нет задач'
-                /> : null }
-                { queryType !== QUERY_TYPE.ALL ? <div ref={this.$taskContainer}  className={"task-container"}>
-                    {this.renderTasks()}
-                </div> : null }
-                { queryType === QUERY_TYPE.ALL ? <div ref={this.$taskContainer} className={"task-container"}>
-                    <SearchInput />
-                    {this.renderTaskLists()}
-                </div> : null }
-                { isShowModal ? <ModalWindow className={"modal"} /> : null}
+                    <div className={"container"}>
+                        <LabelDate />
+                        <div onClick={this.addTask} className={"button-add"}>Добавить +</div>
+                    </div>
+                    <Calendar />
+                    { (tasks.length === 0) && (queryType !== QUERY_TYPE.ALL) ? <Note
+                        header='Нет задач'
+                        content='В выбранный день нет задач'
+                    /> : null }
+                    { queryType !== QUERY_TYPE.ALL ?  this.renderTasks() : null }
+                    { queryType === QUERY_TYPE.ALL ? this.renderTaskLists() : null }
+                    { isShowModal ? <ModalWindow className={"modal"} /> : null}
                 </div>
             </React.Fragment>
         )

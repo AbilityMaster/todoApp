@@ -1,44 +1,74 @@
 import * as React from 'react';
-import {useEffect} from "react";
+import {useEffect, useRef} from "react";
 import {connect} from "react-redux";
 
-import {saveSearchConfig, saveSearchValue} from "../../../actions";
+import { saveSearchValue} from "../../../actions";
 import './SearchInput.scss';
+import {ISearchInput} from "../../../types/interfaces";
 
-const mapStateToProps = (state: any) => ({
+
+const mapStateToProps = (state: any ) => ({
     config: state.app.config
 });
 
 const mapDispatchToProps = (dispatch: any) => ({
-    saveSearchConfig: (data: object) => dispatch(saveSearchConfig(data)),
     saveSearchValue: (data: string) => dispatch(saveSearchValue(data))
 });
 
-function SearchInput(props: any) {
-    const { config, saveSearchConfig, saveSearchValue } = props;
-    console.log(config);
+function SearchInput(props: ISearchInput) {
+    const { saveSearchValue } = props;
+    const [ isFocused, change ] = React.useState(false);
+    const $inputSearch = useRef<HTMLInputElement>(null);
+
     useEffect(() => {
-        console.log('+');
+        if ($inputSearch && $inputSearch.current) {
+            $inputSearch.current.value = '';
+        }
+
+        saveSearchValue('');
     });
 
+    const handleFocus = () => {
+        change(true);
+    };
+
+    const handleBlur = () => {
+        change(false);
+    };
+
     const handleChange = (event: any) => {
-        // event.persist();
-         const searchValue = event.target.value;
-        // const regExp = new RegExp(searchValue, 'i');
-        //
-        // const tasks = config.filter((value: any) => {
-        //    if (regExp.test(value.header)) {
-        //        return value;
-        //    }
-        // });
-        //
+        const searchValue = event.target.value;
+
         saveSearchValue(searchValue);
-        //
-        // saveSearchConfig(tasks);
+    };
+
+    const getStyles = () => {
+        if (isFocused) {
+            return {
+                width: '100%'
+            }
+        }
+
+        return {
+            width: '200px'
+        }
     };
 
     return (
-        <input onBlur={() => {console.log('+');}} onChange={ (event) => handleChange(event) } className={"search-input"} type={"text"} placeholder={"Введите название..."} />
+        <div className={"content-container content-container_visible"}>
+            <input
+                ref={$inputSearch}
+                id="search"
+                onFocus={handleFocus}
+                onBlur={handleBlur}
+                onChange={ (event) => handleChange(event) }
+                style={getStyles()}
+                className={"search-input"}
+                type={"text"}
+                placeholder={"Введите название..."}
+            />
+            <div id="search-block" />
+        </div>
     )
 }
 

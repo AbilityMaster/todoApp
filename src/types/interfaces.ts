@@ -86,6 +86,7 @@ export interface IContextMenu {
     openModal: () => void;
     tempSelectedDay: Date;
     config: ITask [];
+    taskDate: Date;
     x: string;
     y: string;
 }
@@ -96,7 +97,6 @@ export interface IModalWindow {
     listSelectedDays: Date [];
     fetchSelectedDays: (data: Date []) => void;
     addTask(data: object ): void;
-    saveGroupConfig: (data: any) => void;
     taskDate: Date;
     onBlur?(data: boolean): void;
     saveCoords(data: object): void;
@@ -123,4 +123,9 @@ export interface IModalWindow {
     hideModal: () => void;
     idDay: string;
     queryType: string;
+}
+
+export interface ISearchInput {
+    saveSearchValue: (data: string) => void;
+    config: ITask [];
 }

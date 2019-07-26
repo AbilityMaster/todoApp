@@ -129,6 +129,7 @@ class Task extends React.Component<ITaskComponent> {
         const { currentId, config, makeDoneTask, id, selectTaskDate, idDay, saveTasks, saveSearchConfig } = this.props;
         const _config = deepclone(config);
 
+        // eslint-disable-next-line array-callback-return
         const tasks = _config.filter((value: any) => {
             if (value.idDay === idDay) {
                 return value;

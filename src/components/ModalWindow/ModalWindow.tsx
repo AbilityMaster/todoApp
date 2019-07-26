@@ -10,7 +10,6 @@ import {
     getFormatDate,
     transformDate,
     transformId,
-    transformToGroupConfig,
     updateDateArray
 } from "../../utils/utils";
 import CalendarPopup from "../common/CalendarPopup";
@@ -19,7 +18,6 @@ import {saveCoords, showCalendar} from "../../actions/modalWindow";
 import {
     hideContextMenu,
     hideModal,
-    saveGroupConfig,
     selectDay,
     updateEditorState,
     saveTasks,
@@ -38,7 +36,6 @@ const mapDispatchToProps = (dispatch: any) => ({
     hideModal: () => dispatch(hideModal()),
     saveCoords: (data: object) => dispatch(saveCoords(data)),
     showCalendar: () => dispatch(showCalendar()),
-    saveGroupConfig: (data: object) => dispatch(saveGroupConfig(data)),
     saveTasks: (data: any) => dispatch(saveTasks(data)),
     changeTask: (data: any) => dispatch(changeTask(data)),
     fetchSelectedDays: (data: Date[]) => dispatch(fetchSelectedDays(data)),
@@ -105,18 +102,16 @@ class ModalWindow extends React.Component<IModalWindow> {
     };
 
     handleClick = () => {
-        const { addTask, config, queryType, changeTask, type, id, isShowContextMenu, saveGroupConfig,
-            hideContextMenu, editorState, hideModal, taskDate, selectedDayByPopup } = this.props;
+        const { type, id, isShowContextMenu, hideContextMenu, editorState, hideModal, taskDate, selectedDayByPopup } = this.props;
 
         const draftJsConfig = convertToRaw(editorState.getCurrentContent());
         const taskDescription = draftJsConfig.blocks[0].text || '';
 
         hideModal();
-       // selectDay(selectedDayByPopup);
 
         if (type === MODAL_TYPE.CHANGE) {
             const { currentId, config, changeTask, saveTasks, listSelectedDays, fetchSelectedDays } = this.props;
-
+            console.log('+');
            if (taskDescription === '') {
                return;
            }
@@ -133,8 +128,17 @@ class ModalWindow extends React.Component<IModalWindow> {
 
             const _task = tasks.find((value: any) => (value.id === id));
 
+            let isChangedDate = false;
+
+
             const _oldDate = _task.idDay;
+
+            if (_oldDate !== transformDate(taskDate)) {
+                isChangedDate = true;
+            }
+
             const updated = updateDateArray(listSelectedDays, _oldDate, transformDate(taskDate));
+
             fetchSelectedDays(updated);
 
             _task.idDay = transformDate(taskDate);
@@ -143,7 +147,7 @@ class ModalWindow extends React.Component<IModalWindow> {
             _task.draftJsConfig = draftJsConfig;
 
             changeTask({ config: _config, idDay: currentId, idTask: id, data: taskDescription, task: _task });
-            if (tasks.length === 1) {
+            if (tasks.length === 1 && isChangedDate) {
                 saveTasks([]);
             } else {
                 saveTasks(tasks);
@@ -155,7 +159,10 @@ class ModalWindow extends React.Component<IModalWindow> {
         if (type === MODAL_TYPE.ADD) {
             const { config, currentId, listSelectedDays, addTask, saveTasks, selectedDay } = this.props;
 
+
+
             if (selectedDayByPopup) {
+                console.log('+++');
                 selectDay(selectedDayByPopup);
             }
 
