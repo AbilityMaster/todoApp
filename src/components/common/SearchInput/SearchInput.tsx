@@ -4,7 +4,7 @@ import {connect} from "react-redux";
 
 import { saveSearchValue} from "../../../actions";
 import './SearchInput.scss';
-import {ISearchInput} from "../../../types/interfaces";
+import { ISearchInput } from "../../../types/interfaces";
 
 
 const mapStateToProps = (state: any ) => ({

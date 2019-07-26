@@ -2,21 +2,21 @@ import * as React from 'react';
 import { Editor, RichUtils} from "draft-js";
 import {connect} from "react-redux";
 
-import EditorBtns from "../common/InlineToolbar/InlineToolbar";
+import InlineToolbar from "../common/InlineToolbar/InlineToolbar";
 
 import {updateEditorState} from "../../actions";
 import './functionalEditor.scss';
+import { IFunctionalEditor } from '../../types/interfaces';
 
 const mapStateToProps = (state: any) => ({
-    editorState: state.app.editorState,
-    configDraftJs: state.app.editorState
+    editorState: state.app.editorState
 });
 
 const mapDispatchToProps = (dispatch: any) => ({
     updateEditorState: (data: any) => dispatch(updateEditorState(data))
 });
 
-const FunctionalEditor = (props: any) => {
+const FunctionalEditor = (props: IFunctionalEditor) => {
     const { editorState } = props;
 
     const handleChange = (editorState: any) => {
@@ -45,7 +45,7 @@ const FunctionalEditor = (props: any) => {
 
     return (
         <div className={"functional-editor"}>
-            <EditorBtns editorState={ editorState } onToggle={toggleInlineStyle}  />
+            <InlineToolbar onToggle={toggleInlineStyle}  />
             <Editor placeholder={"Введите текст..."} editorState={editorState} onChange={handleChange} />
         </div>
     );

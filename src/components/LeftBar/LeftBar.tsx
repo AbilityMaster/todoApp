@@ -1,7 +1,6 @@
 import * as React from 'react';
-import './LeftBar.scss';
-import {MENU_LINK_TYPE, QUERY_TYPE, TYPE_CALENDAR} from "../../constants";
 import {connect} from "react-redux";
+
 import {
     saveQueryType,
     saveTasks,
@@ -10,25 +9,27 @@ import {
     updateRangeSelected
 } from "../../actions";
 import {getInitialStateForRange, transformDate, transformId} from '../../utils/utils';
+import {MENU_LINK_TYPE, QUERY_TYPE, TYPE_CALENDAR} from "../../constants";
 import {toggleCalendar} from "../../actions/Calendar";
+import './LeftBar.scss';
+import {ITask, ILeftBar} from "../../types/interfaces";
 
 const mapStateToProps = (state: any) => ({
     config: state.app.config,
-    rangeSelected: state.app.rangeSelected,
     type: state.app.type,
     isVisible: state.calendar.isVisible
 });
 
 const mapDispatchToProps = (dispatch: any) => ({
-    saveTasks: (data: any) => dispatch(saveTasks(data)),
+    saveTasks: (data: ITask []) => dispatch(saveTasks(data)),
     selectDay: (data: object) => dispatch(selectDay(data)),
-    updateNumberOfMonths: (data: number) => dispatch(updateNumberOfMonths(data)),
+    updateNumberOfMonths: (data: object) => dispatch(updateNumberOfMonths(data)),
     updateRangeSelected: (data: object) => dispatch(updateRangeSelected(data)),
     saveQueryType: (data: string) => dispatch(saveQueryType(data)),
     toggleCalendar: () => dispatch(toggleCalendar())
 });
 
-function LeftBar(props: any) {
+function LeftBar(props: ILeftBar) {
     const { updateNumberOfMonths, saveQueryType, updateRangeSelected, isVisible, toggleCalendar } = props;
 
     const handleClickMenu = (type: string) => {

@@ -19,7 +19,6 @@ import {
     hideContextMenu,
     hideModal,
     selectDay,
-    updateEditorState,
     saveTasks,
     fetchSelectedDays, changeTask, addTask
 } from "../../actions";
@@ -31,13 +30,12 @@ import nanoid from "nanoid";
 
 
 const mapDispatchToProps = (dispatch: any) => ({
-    updateEditorState: (data: any) => dispatch(updateEditorState(data)),
     hideContextMenu: () => dispatch(hideContextMenu()),
     hideModal: () => dispatch(hideModal()),
     saveCoords: (data: object) => dispatch(saveCoords(data)),
     showCalendar: () => dispatch(showCalendar()),
-    saveTasks: (data: any) => dispatch(saveTasks(data)),
-    changeTask: (data: any) => dispatch(changeTask(data)),
+    saveTasks: (data: ITask []) => dispatch(saveTasks(data)),
+    changeTask: (data: object) => dispatch(changeTask(data)),
     fetchSelectedDays: (data: Date[]) => dispatch(fetchSelectedDays(data)),
     addTask: (data: object) => dispatch(addTask(data))
 });
@@ -45,7 +43,6 @@ const mapDispatchToProps = (dispatch: any) => ({
 const mapStateToProps = (state: any) => ({
     editorState: state.app.editorState,
     isShowContextMenu: state.app.isShowContextMenu,
-    configDraftJs: state.app.configDraftJs,
     type: state.modalWindow.type,
     header: state.task.header,
     draftJsConfig: state.task.draftJsConfig,
@@ -55,7 +52,6 @@ const mapStateToProps = (state: any) => ({
     isShowCalendar: state.modalWindow.isShowCalendar,
     selectedDayByPopup: state.modalWindow.selectedDayByPopup,
     taskDate: state.task.taskDate,
-    queryType: state.app.queryType,
     config: state.app.config,
     currentId: state.app.currentId,
     listSelectedDays: state.app.listSelectedDays
@@ -110,8 +106,8 @@ class ModalWindow extends React.Component<IModalWindow> {
         hideModal();
 
         if (type === MODAL_TYPE.CHANGE) {
-            const { currentId, config, changeTask, saveTasks, listSelectedDays, fetchSelectedDays } = this.props;
-            console.log('+');
+           const { currentId, config, changeTask, saveTasks, listSelectedDays, fetchSelectedDays } = this.props;
+
            if (taskDescription === '') {
                return;
            }
@@ -162,7 +158,6 @@ class ModalWindow extends React.Component<IModalWindow> {
 
 
             if (selectedDayByPopup) {
-                console.log('+++');
                 selectDay(selectedDayByPopup);
             }
 
@@ -193,7 +188,6 @@ class ModalWindow extends React.Component<IModalWindow> {
 
            // this.setState({ forScroll: tasks.length });
             addTask({config: _config, isShowModal: false, listSelectedDays});
-            console.warn(tasks);
             saveTasks(tasks);
         }
 
@@ -219,7 +213,7 @@ class ModalWindow extends React.Component<IModalWindow> {
     }
 
     render() {
-        const { idDay, header, className, draftJsConfig, type, selectedDay, isShowCalendar, selectedDayByPopup, hideModal, taskDate } = this.props;
+        const { header, className, draftJsConfig, type, isShowCalendar, hideModal } = this.props;
 
         return (
             <React.Fragment>
@@ -230,10 +224,19 @@ class ModalWindow extends React.Component<IModalWindow> {
                         <div onClick={hideModal} className={"modal__close"}>✕</div>
                         <h2 className={"modal__header"}>{settings[type].name}</h2>
                         <p className={"modal__date"}>На { getFormatDate(this.detectDate())}
-                            <i onClick={(event) => this.openCalendar(event)} title={"Изменить дату"} className="demo-icon icon-calendar">&#xe800;</i>
+                            <i
+                                onClick={(event) => this.openCalendar(event)}
+                                title={"Изменить дату"}
+                                className="demo-icon icon-calendar">&#xe800;
+                            </i>
                         </p>
                         <p>Заголовок задачи:</p>
-                        <input placeholder={"Введите заголовок..."} ref={this.$inputHeader} defaultValue={ type === MODAL_TYPE.CHANGE ? header : ''} className="modal__input" type={"text"} />
+                        <input
+                            placeholder={"Введите заголовок..."}
+                            ref={this.$inputHeader}
+                            defaultValue={ type === MODAL_TYPE.CHANGE ? header : ''}
+                            className="modal__input" type={"text"}
+                        />
                         <p>{settings[type].labelForDescription}</p>
                         <FunctionalEditor draftJsConfig={type === MODAL_TYPE.CHANGE ? draftJsConfig : null} />
                         <Button type={"form-apply"} onClick={this.handleClick} content={ settings[type].buttonLabel} />

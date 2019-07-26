@@ -9,35 +9,31 @@ import {
     makeDoneTask,
     saveSearchConfig,
     saveTasks,
-    saveToDraftJs,
     showModal,
     updateEditorState
 } from "../../actions";
 import {changeTypeModal} from "../../actions/modalWindow";
 import {selectTask, selectTaskDate} from "../../actions/task";
+import { deepclone, transformId } from "../../utils/utils";
 import './task.scss';
-import {ITaskComponent} from "../../types/interfaces";
-import {deepclone, transformId} from "../../utils/utils";
-
+import { ITask, ITaskComponent } from "../../types/interfaces";
 
 const mapStateToProps = (state: any) => ({
-    editorState: state.app.editorState,
     config: state.app.config,
     currentId: state.app.currentId,
     listSelectedDays: state.app.listSelectedDays
 });
 
 const mapDispatchToProps = (dispatch: any) => ({
-    saveToDraftJs: (config: any) => dispatch(saveToDraftJs(config)),
-    updateEditorState: (config: any) => dispatch(updateEditorState(config)),
+    updateEditorState: (config: ITask []) => dispatch(updateEditorState(config)),
     changeTypeModal: (data: string) => dispatch(changeTypeModal(data)),
     showModal: () => dispatch(showModal()),
     selectTask: (data: object) => dispatch(selectTask(data)),
     selectTaskDate: (data: Date) => dispatch(selectTaskDate(data)),
     makeDoneTask: (data: object) => dispatch(makeDoneTask(data)),
-    deleteTask: (data: any) => dispatch(deleteTask(data)),
-    saveTasks: (data: any) => dispatch(saveTasks(data)),
-    saveSearchConfig: (data: any) => dispatch(saveSearchConfig(data))
+    deleteTask: (data: object) => dispatch(deleteTask(data)),
+    saveTasks: (data: object) => dispatch(saveTasks(data)),
+    saveSearchConfig: (data: ITask []) => dispatch(saveSearchConfig(data))
 });
 
 class Task extends React.Component<ITaskComponent> {
@@ -111,9 +107,9 @@ class Task extends React.Component<ITaskComponent> {
 
        if (draftJsConfig) {
           const config = convertFromRaw(draftJsConfig);
-          let ed = EditorState.createWithContent(config);
+          const editorState = EditorState.createWithContent(config);
 
-          updateEditorState(ed);
+          updateEditorState(editorState);
        }
 
        selectTask({ header, description, draftJsConfig, id, idDay });
@@ -121,22 +117,18 @@ class Task extends React.Component<ITaskComponent> {
        changeTypeModal(MODAL_TYPE.CHANGE);
     };
 
-    onBlur = (data: boolean): void => {
-        this.setState({ isShow: data });
-    };
-
     handleChangeTaskStatus = () => {
         const { currentId, config, makeDoneTask, id, selectTaskDate, idDay, saveTasks, saveSearchConfig } = this.props;
         const _config = deepclone(config);
 
         // eslint-disable-next-line array-callback-return
-        const tasks = _config.filter((value: any) => {
+        const tasks = _config.filter((value: ITask) => {
             if (value.idDay === idDay) {
                 return value;
             }
         });
 
-        const task = tasks.find((value: any) => (value.id === id));
+        const task = tasks.find((value: ITask) => (value.id === id));
 
         if (task && this.$doneInput && this.$doneInput.current) {
             task.isDone = this.$doneInput.current.checked;
@@ -149,7 +141,7 @@ class Task extends React.Component<ITaskComponent> {
     };
 
     render() {
-        const { description, index, isDone, header } = this.props;
+       const { description, index, isDone, header } = this.props;
 
        return (
             <React.Fragment>

@@ -1,39 +1,23 @@
-export interface IProps {
-    searchValue: string;
-    config: ITask [];
-    groupConfig: any;
-    queryType: string;
-    x: string;
-    y: string;
-    tasks: any;
-    taskDate: Date;
-    isShowContextMenu: boolean;
-    isShowLoader: boolean;
+export interface IApp {
+    tasks: ITask [];
     isShowModal: boolean;
+    config: ITask [];
     currentId: string;
-    childrenNumber: number;
-    editorState: any;
     selectedDay: Date;
-    listSelectedDays: Date [];
+    isShowLoader: boolean;
+    isShowContextMenu: boolean;
+    x: number;
+    y: number;
+    queryType: string;
+    searchValue: string;
     showModal: () => void;
-    hideModal: () => void;
-    currentMonth: Date;
-    makeDoneTask: (config: object) => void;
-    addTask: (data: object) => void;
-    changeTask: (data: object) => void;
-    deleteTask: (data: object) => void;
     initLoad: (id: string) => void;
-    openContextMenu: (data: object) => void;
     hideContextMenu: () => void;
-    saveTasks: (data: any) => void;
     changeTypeModal: (data: string) => void;
-    isVisible: boolean;
-    fetchSelectedDays: (data: Date[]) => void;
-    searchConfig: any;
 }
 
 export interface ITask {
-    idDay?: string;
+    idDay: string;
     id: string;
     header: string;
     description: string;
@@ -52,22 +36,19 @@ export interface INote {
     content: string
 }
 
-
 export interface ITaskComponent extends ITask{
-    currentId: string;
     index: number;
-    editorState: any;
+    currentId: string;
     listSelectedDays: Date [];
+    config: Date [];
+    idDay: string;
     updateEditorState: (data: any) => void;
     deleteTask: (data: { config:  ITask [], listSelectedDays: Date [], currentId: string, id: string }) => void;
     makeDoneTask: (data: object) => void;
-    saveToDraftJs: (config: any) => void;
-    saveSearchConfig: (data: any) => void;
+    saveSearchConfig: (data: ITask []) => void;
     changeTypeModal: (data: string) => void;
     showModal: () => void;
     selectTask: (data: object) => void;
-    config: any;
-    idDay: string;
     selectTaskDate: (data: Date) => void;
     saveTasks: (data: object) => void;
 }
@@ -80,52 +61,115 @@ export interface ITextArea {
 
 export interface IContextMenu {
     currentId: string;
+    tempSelectedDay: Date;
+    config: ITask [];
+    taskDate: Date;
+    x: number;
+    y: number;
+    listSelectedDays: Date [];
     selectDay: (data: Date) => void;
     fetchConfig: (data: ITask []) => void;
     setId: (data: string) => void;
     openModal: () => void;
-    tempSelectedDay: Date;
-    config: ITask [];
-    taskDate: Date;
-    x: string;
-    y: string;
+    fetchSelectedDays: (data: Date []) => void;
 }
 
 export interface IModalWindow {
     currentId: string;
-    saveTasks: (data: any) => void;
-    listSelectedDays: Date [];
-    fetchSelectedDays: (data: Date []) => void;
-    addTask(data: object ): void;
-    taskDate: Date;
-    onBlur?(data: boolean): void;
-    saveCoords(data: object): void;
-    draftJsConfig?: any;
-    config?: any;
-    selectedDayByPopup: Date;
-    header?: string;
-    isShowCalendar: boolean;
-    showCalendar: () => void;
-    description?: string;
-    value?: string;
-    selectedDay: Date;
-    type: string;
-    className?: string;
-    taskHeader?: string;
-    textAreaClassName?: string;
-    buttonLabel?: string;
-    id?: string;
-    changeTask: (data: any) => void;
-    editorState: any;
-    updateEditorState: (data: any) => void;
     isShowContextMenu: boolean;
+    type: string;
+    draftJsConfig: any;
+    id: string;
+    idDay: string;
+    selectedDay: Date;
+    isShowCalendar: boolean;
+    selectedDayByPopup: Date;
+    taskDate: Date;
+    config: ITask [];
+    listSelectedDays: Date [];
+    header: string;
+    className?: string;
+    editorState: any;
+    saveTasks: (data: any) => void;
     hideContextMenu: () => void;
     hideModal: () => void;
-    idDay: string;
-    queryType: string;
+    saveCoords(data: object): void;
+    showCalendar: () => void;
+    changeTask: (data: any) => void;
+    fetchSelectedDays: (data: Date []) => void;
+    addTask(data: object ): void;
 }
 
 export interface ISearchInput {
     saveSearchValue: (data: string) => void;
     config: ITask [];
+}
+
+export interface ITaskList {
+    name: string;
+    tasks: ITask [];
+}
+
+export interface ILeftBar {
+    config: ITask [];
+    type: string,
+    isVisible: boolean,
+    saveTasks: (data: ITask []) => void;
+    selectDay: (data: object) => void;
+    updateNumberOfMonths: (data: object) => void;
+    updateRangeSelected: (data: object) => void;
+    saveQueryType: (data: string) => void;
+    toggleCalendar: () => void;
+}
+
+export interface IFunctionalEditor {
+    editorState: any;
+    draftJsConfig: any;
+    updateEditorState: (data: any) => void;
+}
+
+export interface ILabelDate {
+    selectedDay: Date;
+    type: string;
+    rangeSelected: any;
+    queryType: string;
+}
+
+export interface IInlineToolbar {
+    editorState: any;
+    onToggle: (data: string) => void;
+}
+
+export interface IHelpBox {
+    close: (data: boolean) => void;
+}
+
+export interface ICalendarPopup {
+    x: number;
+    y: number;
+    selectDay: (day: Date) => void;
+    hideCalendar: () => void;
+    selectTaskDate: (data: Date) => void;
+}
+
+export interface ICalendar {
+    config: ITask [];
+    currentId: string;
+    selectedDay: Date;
+    listSelectedDays: Date [];
+    currentMonth: Date;
+    numberOfMonths: number;
+    rangeSelected: any;
+    type: string;
+    isVisible: boolean;
+    selectDay: (data: object) => void;
+    selectDayMemory: (data: Date) => void;
+    setId: (id: string) => void;
+    updateCurrentMonth: (data: Date) => void;
+    openContextMenu: (data: object) => void;
+    saveTasks: (data: any) => void;
+    updateRangeSelected: (data: object) => void;
+    saveQueryType: (data: string) => void;
+    toggleCalendar: () => void;
+    selectTaskDate: (data: Date) => void;
 }

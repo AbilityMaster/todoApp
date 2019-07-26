@@ -1,5 +1,4 @@
 import * as React from 'react';
-import nanoid from "nanoid";
 import { connect } from "react-redux";
 
 import ModalWindow from "../ModalWindow";
@@ -10,28 +9,16 @@ import ContextMenu from "../ContextMenu";
 import LeftBar from "../LeftBar";
 import Calendar from "../Calendar";
 import LabelDate from "../common/LabelDate";
-
-import {
-    deepclone, isEmptyArray,
-    transformDate, transformDateArray,
-    transformId, transformToGroupConfig, updateDateArray
-} from "../../utils/utils";
-import {MODAL_TYPE, QUERY_TYPE} from "../../constants";
-import {
-    addTask,
-    deleteTask,
-    hideModal,
-    makeDoneTask,
-    changeTask,
-    showModal,
-    initLoad, openContextMenu, hideContextMenu, saveTasks, selectDay, fetchSelectedDays
-} from "../../actions";
-import "./app.scss";
-import "react-day-picker/lib/style.css";
-import {IProps, ITask} from "../../types/interfaces";
-import {changeTypeModal} from "../../actions/modalWindow";
 import TaskList from "../TaskList";
 import SearchInput from "../common/SearchInput/SearchInput";
+
+import { deepclone, transformDate, transformToGroupConfig } from "../../utils/utils";
+import {MODAL_TYPE, QUERY_TYPE} from "../../constants";
+import { showModal, initLoad, hideContextMenu } from "../../actions";
+import "react-day-picker/lib/style.css";
+import {changeTypeModal} from "../../actions/modalWindow";
+import "./app.scss";
+import {IApp, ITask} from "../../types/interfaces";
 
 interface AppState {
     forScroll: number;
@@ -42,39 +29,23 @@ const mapStateToProps = (state: any) => ({
     isShowModal: state.app.isShowModal,
     config: state.app.config,
     currentId: state.app.currentId,
-    childrenNumber: state.app.childrenNumber,
     selectedDay: state.app.selectedDay,
-    listSelectedDays: state.app.listSelectedDays,
     isShowLoader: state.app.isShowLoader,
     isShowContextMenu: state.app.isShowContextMenu,
-    editorState: state.app.editorState,
     x: state.app.x,
     y: state.app.y,
-    currentMonth: state.app.currentMonth,
-    groupConfig: state.app.groupConfig,
-    taskDate: state.task.taskDate,
     queryType: state.app.queryType,
-    isVisible: state.calendar.isVisible,
-    searchConfig: state.app.searchConfig,
     searchValue: state.app.searchValue
 });
 
 const mapDispatchToProps = (dispatch: any) => ({
     showModal: () => dispatch(showModal()),
-    hideModal: () => dispatch(hideModal()),
-    deleteTask: (data: object) => dispatch(deleteTask(data)),
-    changeTask: (data: object) => dispatch(changeTask(data)),
-    makeDoneTask: (data: any) => dispatch(makeDoneTask(data)),
-    addTask: (data: object) => dispatch(addTask(data)),
     initLoad: (id: string) => dispatch(initLoad(id)),
-    openContextMenu: (data: object) => dispatch(openContextMenu(data)),
     hideContextMenu: () => dispatch(hideContextMenu()),
-    saveTasks: (data: any) => dispatch(saveTasks(data)),
     changeTypeModal: (data: string) => dispatch(changeTypeModal(data)),
-    fetchSelectedDays: (data: Date[]) => dispatch(fetchSelectedDays(data))
 });
 
-class App extends React.Component<IProps> {
+class App extends React.Component<IApp> {
     $taskContainer = React.createRef<HTMLDivElement>();
 
     state: AppState = {
@@ -91,7 +62,7 @@ class App extends React.Component<IProps> {
         initLoad(id);
     }
 
-    componentDidUpdate(prevProps: Readonly<IProps>, prevState: Readonly<{}>, snapshot?: any): void {
+    componentDidUpdate(prevProps: Readonly<IApp>, prevState: Readonly<{}>, snapshot?: any): void {
         const { queryType } = this.props;
 
         const prevForScroll = deepclone(prevState);
@@ -139,7 +110,7 @@ class App extends React.Component<IProps> {
         return (
             <div ref={this.$taskContainer}  className={"content-container"}>
                 {
-                    tasks.map((value: any, index: number) => {
+                    tasks.map((value: ITask, index: number) => {
                         return (
                             <Task
                                 key={value.id}
@@ -201,7 +172,7 @@ class App extends React.Component<IProps> {
 
         return (
             <React.Fragment>
-                <LeftBar addTask={this.addTask} />
+                <LeftBar />
                 { isShowContextMenu ? <ContextMenu openModal={this.addTask}  x={x} y={y} /> : null }
                 { isShowLoader ? <Loader /> : null}
                 <div className="main-container" style={isShowLoader ? {filter: 'blur(6px)'} : {}}>

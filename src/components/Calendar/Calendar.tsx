@@ -19,9 +19,9 @@ import './Calendar.scss';
 import HelpBox from '../common/HelpBox';
 import {toggleCalendar} from "../../actions/Calendar";
 import {selectTaskDate} from "../../actions/task";
+import {ICalendar} from "../../types/interfaces";
 
 const mapStateToProps = (state: any) => ({
-    tasks: state.app.tasks,
     config: state.app.config,
     currentId: state.app.currentId,
     selectedDay: state.app.selectedDay,
@@ -46,7 +46,7 @@ const mapDispatchToProps = (dispatch: any) => ({
     selectTaskDate: (data: Date) => dispatch(selectTaskDate(data))
 });
 
-const Calendar = (props: any) => {
+const Calendar = (props: ICalendar) => {
     const { updateCurrentMonth, selectedDay, numberOfMonths, updateRangeSelected, rangeSelected, type, toggleCalendar, isVisible } = props;
     const [ isShowHelpBox, updateHelpBoxVisibility ] = React.useState(false);
 

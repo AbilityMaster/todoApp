@@ -4,6 +4,7 @@ import {connect} from "react-redux";
 import {getFormatDate} from "../../../utils/utils";
 import './LabelDate.scss';
 import {QUERY_TYPE, TYPE_CALENDAR} from "../../../constants";
+import { ILabelDate } from "../../../types/interfaces";
 
 const mapStateToProps = (state: any) => ({
     selectedDay: state.app.selectedDay,
@@ -12,7 +13,7 @@ const mapStateToProps = (state: any) => ({
     queryType: state.app.queryType
 });
 
-function LabelDate(props: any) {
+function LabelDate(props: ILabelDate) {
     const { selectedDay, type, rangeSelected, queryType } = props;
     const { from, to } = rangeSelected;
 

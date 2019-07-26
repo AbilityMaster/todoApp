@@ -1,7 +1,9 @@
 import * as React from 'react';
-import './HelpBox.scss';
 
-function HelpBox(props: any) {
+import './HelpBox.scss';
+import { IHelpBox } from "../../../types/interfaces";
+
+function HelpBox(props: IHelpBox) {
     return (
         <React.Fragment>
             <div className={"help-box"}>

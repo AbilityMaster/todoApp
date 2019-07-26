@@ -47,3 +47,5 @@ export const QUERY_TYPE = {
     NEXT_WEEK: 'NEXT_WEEK',
     ALL: 'ALL'
 };
+
+export const WIDTH_LEFT_MENU = 240;

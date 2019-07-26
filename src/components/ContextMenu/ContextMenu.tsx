@@ -1,22 +1,24 @@
 import * as React from 'react';
 import {connect} from "react-redux";
 
-import {transformDate} from "../../utils/utils";
-import {fetchConfig, hideContextMenu, selectDay, setId} from "../../actions";
+import {transformDate, transformDateArray, transformStringArray} from "../../utils/utils";
+import {fetchConfig, fetchSelectedDays, hideContextMenu, saveTasks, selectDay, setId} from "../../actions";
 import {IContextMenu, ITask} from "../../types/interfaces";
 import './contextMenu.scss';
 
 const mapDispatchToProps = (dispatch: any) => ({
     setId: (id: string) => dispatch(setId(id)),
     selectDay: (data: Date) => dispatch(selectDay(data)),
-    fetchConfig: (data: ITask []) => dispatch(fetchConfig(data))
+    fetchConfig: (data: ITask []) => dispatch(fetchConfig(data)),
+    fetchSelectedDays: (data: Date []) => dispatch(fetchSelectedDays(data))
 });
 
 const mapStateToProps = (state: any) => ({
     tempSelectedDay: state.app.tempSelectedDay,
     currentId: state.app.currentId,
     config: state.app.config,
-    taskDate: state.app.taskDate
+    taskDate: state.app.taskDate,
+    listSelectedDays: state.app.listSelectedDays
 });
 
 function ContextMenu(props: IContextMenu) {
@@ -46,15 +48,21 @@ function ContextMenu(props: IContextMenu) {
     };
 
     const deleteAll = () => {
-      const { config, tempSelectedDay, fetchConfig } = props;
+      const { config, tempSelectedDay, fetchConfig, listSelectedDays, fetchSelectedDays } = props;
 
-      const idSearch = transformDate(tempSelectedDay)
+
+      const selectedDays = transformDateArray(listSelectedDays);
+        console.log(selectedDays);
+      const idSearch = transformDate(tempSelectedDay);
       const _config = config.filter(value => {
           if (value.idDay !== idSearch) {
               return value;
           }
       });
+      const del = selectedDays.findIndex(value => ( value === idSearch));
+      selectedDays.splice(del, 1);
 
+      fetchSelectedDays(transformStringArray(selectedDays));
       fetchConfig(_config);
       hideContextMenu();
     };

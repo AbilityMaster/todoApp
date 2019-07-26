@@ -1,6 +1,8 @@
 import * as React from 'react';
-import './inlineToolbar.scss';
 import {connect} from 'react-redux';
+
+import './inlineToolbar.scss';
+import {IInlineToolbar} from "../../../types/interfaces";
 
 const mapStateToProps = (state: any) => ({
    editorState: state.app.editorState
@@ -19,20 +21,8 @@ const BLOCK_TYPES = [
     {label: 'Code Block', style: 'code-block'},
 ];
 
-const InlineToolbar = (props: any) => {
+const InlineToolbar = (props: IInlineToolbar) => {
     const { onToggle } = props;
-
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const handleClick = () => {
-
-        console.log('h1');
-        const contentState = props.editorState.getCurrentContent();
-        const contentBlock = contentState.getFirstBlock();
-
-        console.log(contentBlock);
-
-      //  props.editorState.push()
-    };
 
     const handleMouseDown = (event: any, type: any) => {
         event.preventDefault();

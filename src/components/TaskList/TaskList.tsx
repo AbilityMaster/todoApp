@@ -1,14 +1,12 @@
 import * as React from 'react';
+
 import './TaskList.scss';
-import {connect} from 'react-redux';
 import Task from "../Task/Task";
-import {getFormatDate, transformDate, transformId} from "../../utils/utils";
 
-const mapStateToProps = (state: any) => ({
-    groupConfig: state.app.groupConfig
-});
+import { getFormatDate, transformId } from "../../utils/utils";
+import { ITask, ITaskList } from "../../types/interfaces";
 
-class TaskList extends React.Component<any> {
+class TaskList extends React.Component<ITaskList> {
     renderTasks() {
         const { tasks } = this.props;
 
@@ -16,7 +14,7 @@ class TaskList extends React.Component<any> {
             return null;
         }
 
-        return tasks.map((value: any, index: number) => <Task
+        return tasks.map((value: ITask, index: number) => <Task
             key={value.id}
             id={value.id}
             idDay={value.idDay}
@@ -40,4 +38,4 @@ class TaskList extends React.Component<any> {
     }
 }
 
-export default connect(mapStateToProps)(TaskList);
+export default TaskList;
