@@ -14,6 +14,7 @@ export interface IApp {
     initLoad: (id: string) => void;
     hideContextMenu: () => void;
     changeTypeModal: (data: string) => void;
+    updateEditorState: (data: any) => void;
 }
 
 export interface ITask {

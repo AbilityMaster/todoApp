@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { connect } from "react-redux";
+import { EditorState } from 'draft-js';
 
 import ModalWindow from "../ModalWindow";
 import Task from "../Task";
@@ -14,7 +15,7 @@ import SearchInput from "../common/SearchInput/SearchInput";
 
 import { deepclone, transformDate, transformToGroupConfig } from "../../utils/utils";
 import {MODAL_TYPE, QUERY_TYPE} from "../../constants";
-import { showModal, initLoad, hideContextMenu } from "../../actions";
+import {showModal, initLoad, hideContextMenu, updateEditorState} from "../../actions";
 import "react-day-picker/lib/style.css";
 import {changeTypeModal} from "../../actions/modalWindow";
 import "./app.scss";
@@ -43,6 +44,7 @@ const mapDispatchToProps = (dispatch: any) => ({
     initLoad: (id: string) => dispatch(initLoad(id)),
     hideContextMenu: () => dispatch(hideContextMenu()),
     changeTypeModal: (data: string) => dispatch(changeTypeModal(data)),
+    updateEditorState: (data: any) => dispatch(updateEditorState(data))
 });
 
 class App extends React.Component<IApp> {
@@ -73,7 +75,7 @@ class App extends React.Component<IApp> {
     }
 
     addTask = () => {
-       const { currentId, showModal, changeTypeModal } = this.props;
+       const { currentId, showModal, changeTypeModal, updateEditorState } = this.props;
 
         if (!currentId ) {
             return;
@@ -81,6 +83,7 @@ class App extends React.Component<IApp> {
 
         changeTypeModal(MODAL_TYPE.ADD);
         showModal();
+        updateEditorState(EditorState.createEmpty());
     };
 
     handleClickOut = (event: any) => {
