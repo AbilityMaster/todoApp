@@ -164,7 +164,7 @@ class ModalWindow extends React.Component<IModalWindow> {
             const _config: ITask [] = deepclone(config);
 
             if (taskDescription === '') {
-                return;
+              //  return;
             }
 
             _config.push({

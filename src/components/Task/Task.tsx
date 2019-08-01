@@ -14,7 +14,7 @@ import {
 } from "../../actions";
 import {changeTypeModal} from "../../actions/modalWindow";
 import {selectTask, selectTaskDate} from "../../actions/task";
-import { deepclone, transformId } from "../../utils/utils";
+import {deepclone, transformDateArray, transformId, transformStringArray} from "../../utils/utils";
 import './task.scss';
 import { ITask, ITaskComponent } from "../../types/interfaces";
 
@@ -70,6 +70,7 @@ class Task extends React.Component<ITaskComponent> {
     delete = () => {
         const { currentId, config, listSelectedDays, deleteTask, saveTasks, id } = this.props;
         const _config = deepclone(config);
+        let _listSelectedDays = transformDateArray(listSelectedDays);
 
         const indexDel = _config.findIndex((value: any) => (value.id === id));
         _config.splice(indexDel, 1);
@@ -82,13 +83,13 @@ class Task extends React.Component<ITaskComponent> {
         });
 
         if (tasks.length === 0) {
-            const index = listSelectedDays.findIndex(value => (value === transformId(currentId)) );
-            listSelectedDays.splice(index, 1);
+            const index = _listSelectedDays.findIndex((value: string) => (value === currentId));
+            _listSelectedDays.splice(index, 1);
         }
 
         deleteTask({
             config: _config,
-            listSelectedDays,
+            listSelectedDays: transformStringArray(_listSelectedDays),
             currentId,
             id
         });
