@@ -13,7 +13,6 @@ export function transformDate(date: Date) {
  */
 
 export function transformDateArray(data: Date[]) {
-    console.log(data);
     return data.map(value => {
         return `${value.getFullYear()}-${value.getMonth()+1}-${value.getDate()}`;
     });

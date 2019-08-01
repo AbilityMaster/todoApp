@@ -22,7 +22,7 @@ import {
     saveTasks,
     fetchSelectedDays, changeTask, addTask
 } from "../../actions";
-import {MODAL_TYPE, QUERY_TYPE} from "../../constants";
+import {MODAL_TYPE} from "../../constants";
 import {IModalWindow, ITask} from "../../types/interfaces";
 import "./Draft.css";
 import './modalWindow.scss';
@@ -113,16 +113,17 @@ class ModalWindow extends React.Component<IModalWindow> {
            }
 
             const _config = deepclone(config);
-            const task = _config.find((value: any) => (value.id === id));
+            const task = _config.find((value: ITask) => (value.id === id));
             const idDay = task.idDay || '';
 
-            const tasks = _config.filter((value: any) => {
+            // eslint-disable-next-line array-callback-return
+            const tasks = _config.filter((value: ITask) => {
                 if (value.idDay === idDay) {
                     return value;
                 }
             });
 
-            const _task = tasks.find((value: any) => (value.id === id));
+            const _task = tasks.find((value: ITask) => (value.id === id));
 
             let isChangedDate = false;
 
@@ -153,7 +154,7 @@ class ModalWindow extends React.Component<IModalWindow> {
         }
 
         if (type === MODAL_TYPE.ADD) {
-            const { config, currentId, listSelectedDays, addTask, saveTasks, selectedDay } = this.props;
+            const { config, currentId, listSelectedDays, addTask, saveTasks } = this.props;
 
 
 

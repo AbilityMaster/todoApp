@@ -2,7 +2,7 @@ import * as React from 'react';
 import {connect} from "react-redux";
 
 import {transformDate, transformDateArray, transformStringArray} from "../../utils/utils";
-import {fetchConfig, fetchSelectedDays, hideContextMenu, saveTasks, selectDay, setId} from "../../actions";
+import {fetchConfig, fetchSelectedDays, hideContextMenu, selectDay, setId} from "../../actions";
 import {IContextMenu, ITask} from "../../types/interfaces";
 import './contextMenu.scss';
 
@@ -54,6 +54,7 @@ function ContextMenu(props: IContextMenu) {
       const selectedDays = transformDateArray(listSelectedDays);
         console.log(selectedDays);
       const idSearch = transformDate(tempSelectedDay);
+        // eslint-disable-next-line array-callback-return
       const _config = config.filter(value => {
           if (value.idDay !== idSearch) {
               return value;

@@ -137,12 +137,10 @@ class App extends React.Component<IApp> {
         let _config = deepclone(config);
         const regExp = new RegExp(searchValue, 'i');
 
-
-
         if (searchValue) {
-            _config = _config.filter((value: any) => {
-                console.log(regExp.test(value.header), searchValue, value.header );
-                if (regExp.test(value.header)) {
+            // eslint-disable-next-line array-callback-return
+            _config = _config.filter((value: ITask) => {
+                if (regExp.test(value.header) || regExp.test(value.description)) {
                     return value;
                 }
             })
