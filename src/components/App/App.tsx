@@ -137,8 +137,11 @@ class App extends React.Component<IApp> {
         let _config = deepclone(config);
         const regExp = new RegExp(searchValue, 'i');
 
+
+
         if (searchValue) {
             _config = _config.filter((value: any) => {
+                console.log(regExp.test(value.header), searchValue, value.header );
                 if (regExp.test(value.header)) {
                     return value;
                 }
@@ -148,10 +151,15 @@ class App extends React.Component<IApp> {
         _config = transformToGroupConfig(_config);
 
         if (Object.keys(_config).length === 0) {
-            return <Note
-                header='Нет задач'
-                content='Не найдено задач'
-            />;
+            return (
+                <React.Fragment>
+                    <SearchInput />
+                    <Note
+                        header='Нет задач'
+                        content='Не найдено задач'
+                     />
+                </React.Fragment>
+            );
         }
 
         return (
