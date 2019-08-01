@@ -1,0 +1,87 @@
+.test {
+  position: relative;
+}
+
+
+.button-popup {
+  &__plus {
+    position: fixed;
+    bottom: 40px;
+    right: 40px;
+    z-index: 400;
+    background-color: #1254a2;
+    width: 45px;
+    height: 45px;
+    line-height: 45px;
+    text-align: center;
+    font-size: 27px;
+    color: #fff;
+    cursor: pointer;
+    border-radius: 50%;
+    animation: radial-pulse 1s infinite;
+    transition:  line-height ease .15s, bottom ease .15s, right ease .15s, width ease .15s, height ease .15s, font-size ease .15s;
+
+    & span {
+      display: inline-block;
+    }
+
+    &:hover {
+      width: 50px;
+      height: 50px;
+      font-size: 30px;
+      bottom: 37px;
+      right: 37px;
+      line-height: 50px;
+      transition: line-height ease .15s, bottom ease .15s, right ease .15s, width ease .15s, height ease .15s, font-size ease .15s;
+      animation: radial-pulse 0.5s infinite;
+
+      & span {
+        animation-name: rotateAddSymbol;
+        animation-duration: .5s;
+        animation-iteration-count: 1;
+      }
+
+      & ~ .button-popup__text {
+        width: 165px;
+        transition: all ease .15s;
+        box-shadow: 0 0 11px 2px #25449a;
+      }
+    }
+  }
+
+  &__text {
+    position: absolute;
+    overflow: hidden;
+    font-size: 13px;
+    z-index: 229;
+    background-color: #1b61b3;
+    width: 0;
+    border-top-left-radius: 50px;
+    border-bottom-left-radius: 50px;
+    bottom: 40px;
+    height: 45px;
+    right: 64px;
+    line-height: 45px;
+    color: #fff;
+    text-align: center;
+  }
+}
+
+@keyframes radial-pulse {
+  0% {
+    box-shadow: 0 0 0 0px rgba(87, 146, 216, 0.5);
+  }
+
+  100% {
+    box-shadow: 0 0 0 25px rgba(87, 146, 216, 0);
+  }
+}
+
+@keyframes rotateAddSymbol {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}

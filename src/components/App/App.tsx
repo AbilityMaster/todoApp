@@ -20,6 +20,7 @@ import "react-day-picker/lib/style.css";
 import {changeTypeModal} from "../../actions/modalWindow";
 import "./app.scss";
 import {IApp, ITask} from "../../types/interfaces";
+import ButtonPopup from "../common/ButtonPopup";
 
 interface AppState {
     forScroll: number;
@@ -181,6 +182,7 @@ class App extends React.Component<IApp> {
 
         return (
             <React.Fragment>
+                <ButtonPopup />
                 <LeftBar />
                 { isShowContextMenu ? <ContextMenu openModal={this.addTask}  x={x} y={y} /> : null }
                 { isShowLoader ? <Loader /> : null}

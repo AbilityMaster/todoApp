@@ -1,3 +1,6 @@
+import {changeTypeModal} from "../actions/modalWindow";
+import {showModal, updateEditorState} from "../actions";
+
 export interface IApp {
     tasks: ITask [];
     isShowModal: boolean;
@@ -173,4 +176,11 @@ export interface ICalendar {
     saveQueryType: (data: string) => void;
     toggleCalendar: () => void;
     selectTaskDate: (data: Date) => void;
+}
+
+export interface IButtonPopup {
+    currentId: string;
+    changeTypeModal: (data: string) => void;
+    showModal: () => void;
+    updateEditorState: (data: any) => void;
 }
