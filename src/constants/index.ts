@@ -17,6 +17,7 @@ export const MONTHS = [
     'Ноябрь',
     'Декабрь',
 ];
+
 export const WEEKDAYS_LONG = [
     'Воскресенье',
     'Понедельник',
@@ -26,6 +27,10 @@ export const WEEKDAYS_LONG = [
     'Пятница',
     'Суббота',
 ];
+
+export const BUTTON_TYPE = {
+    FORM_APPLY: 'FORM_APPLY'
+};
 
 export const WEEKDAYS_SHORT = ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'];
 
