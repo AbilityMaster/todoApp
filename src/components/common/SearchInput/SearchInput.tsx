@@ -61,7 +61,7 @@ function SearchInput(props: ISearchInput) {
                 id="search"
                 onFocus={handleFocus}
                 onBlur={handleBlur}
-                onChange={ (event) => handleChange(event) }
+                onChange={handleChange}
                 style={getStyles()}
                 className={"search-input"}
                 type={"text"}

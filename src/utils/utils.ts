@@ -11,7 +11,6 @@ export function transformDate(date: Date) {
  * Создает несколько id, преобразуя массив с датами в массив с строками
  * @param data
  */
-
 export function transformDateArray(data: Date[]) {
     return data.map(value => {
         return `${value.getFullYear()}-${value.getMonth()+1}-${value.getDate()}`;
@@ -21,13 +20,10 @@ export function transformDateArray(data: Date[]) {
 /***
  * Преобразует массив из текстовых id, в массив с датами
  * @param data
+ * @return Date []
  */
 
-export function transformStringArray(data: string[]) {
-    return data.map(value => {
-        return new Date(value);
-    });
-}
+export const transformStringArray = (data: string[]) => data.map(value => new Date(value));
 
 /***
  * Преобразовывает из id типа строки в дату
@@ -50,7 +46,7 @@ export function getFormatDate(date: Date) {
     return `${date.getDate()} ${months[date.getMonth()]}, ${days[date.getDay()]}`
 }
 
-export const deepclone = (obj: any) => JSON.parse(JSON.stringify(obj));
+export const deepclone = <T>(obj: T) => JSON.parse(JSON.stringify(obj));
 
 /***
  * Для получения массива дат из выбранного диапозона,
@@ -127,8 +123,4 @@ export function transformToGroupConfig(config: any) {
     });
 
     return keys;
-}
-
-export function isEmptyArray(data: any) {
-    return data.length === 0;
 }

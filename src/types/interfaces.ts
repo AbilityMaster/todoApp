@@ -1,6 +1,3 @@
-import {changeTypeModal} from "../actions/modalWindow";
-import {showModal, updateEditorState} from "../actions";
-
 export interface IApp {
     tasks: ITask [];
     isShowModal: boolean;

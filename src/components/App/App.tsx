@@ -13,14 +13,14 @@ import LabelDate from "../common/LabelDate";
 import TaskList from "../TaskList";
 import SearchInput from "../common/SearchInput/SearchInput";
 
-import { deepclone, transformDate, transformToGroupConfig } from "../../utils/utils";
+import {deepclone, transformDate, transformToGroupConfig} from "../../utils/utils";
 import {MODAL_TYPE, QUERY_TYPE} from "../../constants";
 import {showModal, initLoad, hideContextMenu, updateEditorState} from "../../actions";
 import "react-day-picker/lib/style.css";
 import {changeTypeModal} from "../../actions/modalWindow";
 import "./app.scss";
-import {IApp, ITask} from "../../types/interfaces";
 import ButtonPopup from "../common/ButtonPopup";
+import {IApp, ITask} from "../../types/interfaces";
 
 interface AppState {
     forScroll: number;
@@ -135,16 +135,11 @@ class App extends React.Component<IApp> {
 
     renderTaskLists() {
         const { config, searchValue } = this.props;
-        let _config = deepclone(config);
         const regExp = new RegExp(searchValue, 'i');
+        let _config = deepclone(config);
 
         if (searchValue) {
-            // eslint-disable-next-line array-callback-return
-            _config = _config.filter((value: ITask) => {
-                if (regExp.test(value.header) || regExp.test(value.description)) {
-                    return value;
-                }
-            })
+            _config = _config.filter((value: ITask) => regExp.test(value.header) || regExp.test(value.description));
         }
 
         _config = transformToGroupConfig(_config);
